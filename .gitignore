@@ -1,7 +1,12 @@
 __pycache__
+__pycache__/
+*.py[cod]
+env
+venv
 .venv
 token
 Package.bat
 dist
 .pypirc
 CordForge.egg-info
+BuildEnv
