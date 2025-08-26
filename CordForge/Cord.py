@@ -160,10 +160,8 @@ class Cord(Bot):
                        Horizontal=Horizontal, VerticalCenter=VerticalCenter,
                        HorizontalCenter=HorizontalCenter)
         if Parent == None:
-            print("No Parent")
             _.ImageComponents.append(NewList)
         else:
-            print("Parent")
             Parent.Children.append(NewList)
 
 

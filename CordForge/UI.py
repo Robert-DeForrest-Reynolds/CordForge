@@ -3,6 +3,8 @@ from PIL import ImageDraw, ImageFont
 from .Colors import *
 from .ListItem import ListItem
 from .Vector2 import Vector2
+from decimal import Decimal, InvalidOperation
+from .Utilities import Format_Numeric
 
 
 class Component:
@@ -112,13 +114,16 @@ class List(Component):
         TotalHeight = 0
         Item:ListItem
         for Item in _.Items:
-            FontWidth = await _.Get_Text_Width(Item.Text)
+            Numeric = None
+            try:Numeric = await Format_Numeric(float(Decimal(Item.Text.replace(",",""))))
+            except InvalidOperation: print("Invalid Numeric Instantiation")
+            FontWidth = await _.Get_Text_Width(Numeric) if Numeric else await _.Get_Text_Width(Item.Text)
             if Item.Image:
                 ImageX = _.XCenter - FontWidth//2 - Item.Image.width + Item.Separation
                 _.Image.paste(im=Item.Image, box=(ImageX, Y + TotalHeight), mask=Item.Image)
             TextX = _.XCenter - FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
             Drawing.text((TextX, Y + TotalHeight),
-                            Item.Text,
+                            Numeric if Numeric else Item.Text,
                             font=_.Font,
                             fill=WHITE)
             TotalHeight += _.FontHeight + _.Separation
