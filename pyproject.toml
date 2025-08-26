@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=65.5.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CordForge"
+version = "0.0.18"
+description = "Discord Bot Library - UI & Image Manipulation for Making Games"
+requires-python = ">=3.13"
+readme = "README.md"
+license = "MIT"
+keywords = ["discord", "discord-bot", "discord-bot-library", "discord-games"]
+authors = [{name = "Robert Lawrence DeForrest Reynolds"}]
+dependencies = [
+    "discord.py>=2.6.0",
+    "Pillow>=10.0.0",
+]
+
+[project.scripts]
+cordforge = "CordForge.__main__:run"
+
+[project.urls]
+Homepage = "https://github.com/Robert-DeForrest-Reynolds/CordForge"
+Repository = "https://github.com/Robert-DeForrest-Reynolds/CordForge"

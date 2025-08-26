@@ -1,0 +1,7 @@
+__pycache__
+.venv
+token
+Package.bat
+dist
+.pypirc
+CordForge.egg-info
