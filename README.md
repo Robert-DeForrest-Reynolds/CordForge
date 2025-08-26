@@ -4,8 +4,6 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 
 **Will be a Python package on first full-release**
 
-**The docs are mostly AI generated currently; am working on them soon**
-
 ## Table of Contents
 1. [Installation](#installation)
 2. [Troubleshooting](#troubleshooting)
