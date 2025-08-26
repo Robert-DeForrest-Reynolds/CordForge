@@ -5,7 +5,6 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 **The docs are mostly AI generated currently; am working on them soon**
 
 ## Table of Contents
-
 1. [Installation](#installation)
 2. [Troubleshooting](#troubleshooting)
 2. [Getting Help](#getting-help)
@@ -14,20 +13,17 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 # Installation
 
 ### Prerequisites
-
 - Python 3.13 or higher
 - Discord Bot Token
 - Discord.py 2.6.0 or higher
 - Pillow 10.0.0 or higher
 
 ### Installing CordForge
-
 ```bash
 pip install cordforge
 ```
 
 Or install from source:
-
 ```bash
 git clone https://github.com/Robert-DeForrest-Reynolds/CordForge
 cd CordForge
@@ -35,19 +31,17 @@ pip install -e .
 ```
 
 ### Create Your Bot Token
-
 First, create a Discord application and bot at [Discord Developer Portal](https://discord.com/developers/applications).
 
 ### Set Up Your Project
-
 Create a `Keys` file in your project directory:
-
+`key_name~your_discord_bot_token_here`
 ```
-mybot~your_discord_bot_token_here
+stuart~OTk3MDA...
 ```
 
 ### Basic Bot Setup
-
+`bot.py`
 ```python
 from CordForge import Cord
 
@@ -66,6 +60,12 @@ Bot = Cord("mybot", main_menu)
 Bot.Start()
 ```
 
+### Launch Bot
+`cordforge bot_file.py token-key`
+```bash
+cordforge bot.py mybot
+```
+
 ### Next Steps
 
 Now that you have a basic bot running, here are some ideas to expand it:
@@ -75,6 +75,16 @@ Now that you have a basic bot running, here are some ideas to expand it:
 3. **Add images** - Use ListItem with images for richer content
 4. **Create games** - Build simple games like tic-tac-toe or number guessing
 5. **Add persistence** - Save user data to files or databases
+
+
+### Version Control
+Ensure your `Keys` file is hidden, here is a recommend .gitignore for example:
+```
+__pycache__
+.venv
+Keys
+Data
+```
 
 # Troubleshooting
 
