@@ -2,29 +2,100 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 
 **Requires discord.py & Pillow**
 **Will be a Python package on first full-release**
+**The docs are mostly AI generated currently; am working on them soon**
 
-Save your tokens to a file named `Keys` within the same folder as your bot. Pro tip: make sure your key is hidden from whatever version control you may be using. All keys are read in as lower case by the launcher. Example `Keys` file:
-```
-stuart stuart's_token
-marie marie's_token
-official official_token
+## Table of Contents
+
+1. [Installation](#installation)
+2. [Troubleshooting](#troubleshooting)
+2. [Getting Help](#getting-help)
+
+
+# Installation
+
+### Prerequisites
+
+- Python 3.13 or higher
+- Discord Bot Token
+- Discord.py 2.6.0 or higher
+- Pillow 10.0.0 or higher
+
+### Installing CordForge
+
+```bash
+pip install cordforge
 ```
 
-Very minimal example:
+Or install from source:
+
+```bash
+git clone https://github.com/Robert-DeForrest-Reynolds/CordForge
+cd CordForge
+pip install -e .
+```
+
+### Create Your Bot Token
+
+First, create a Discord application and bot at [Discord Developer Portal](https://discord.com/developers/applications).
+
+### Set Up Your Project
+
+Create a `Keys` file in your project directory:
+
+```
+mybot~your_discord_bot_token_here
+```
+
+### Basic Bot Setup
+
 ```python
-from CordForge import *
+from CordForge import Cord
 
-async def Entry() -> None:
-    await Bot.Add_Button(Label="Some Action", Callback=Some_Action, Arguments=[])
+async def main_menu():
+    """Your main dashboard function"""
     await Bot.New_Image()
+    await Bot.Add_Button("Click Me!", button_callback, [])
+    # Add more UI elements here
 
-async def Some_Action(Interaction) -> None:
-    await Bot.Reply(Interaction)
+async def button_callback(interaction):
+    """Handle button clicks"""
+    await Bot.Reply(interaction)
 
-Bot = Cord("cmd", Entry)
+# Create and start your bot
+Bot = Cord("mybot", main_menu)
 Bot.Start()
 ```
 
+### Next Steps
 
-### Important Things to Document
-`_` could also be thought of as `setup`, function that runs async functions during setup
+Now that you have a basic bot running, here are some ideas to expand it:
+
+1. **Add more screens** - Create different sections for your bot
+2. **Use containers** - Organize your UI with containers and borders
+3. **Add images** - Use ListItem with images for richer content
+4. **Create games** - Build simple games like tic-tac-toe or number guessing
+5. **Add persistence** - Save user data to files or databases
+
+# Troubleshooting
+
+### Bot doesn't respond
+- Check that your bot token is correct in the `Keys` file
+- Make sure your bot is invited to the server with proper permissions
+- Verify the bot is online (check the console output)
+
+### Images don't appear
+- Always call `await Bot.New_Image()` before adding components
+- Make sure to call `await Bot.Reply(interaction)` to send the interface
+
+### Buttons don't work
+- Ensure your callback functions accept an `interaction` parameter
+- Check that you're calling `await Bot.Reply(interaction)` in your callbacks
+
+### Common Errors
+- **"No image found"**: Call `await Bot.New_Image()` first
+- **"Token not found"**: Check your `Keys` file format
+- **"Invalid command"**: Make sure your bot prefix matches what you type
+
+# Getting Help
+- Look at the [examples](EXAMPLES.md) for more complex use cases
+- Review the [API reference](API_REFERENCE.md) for all available methods
