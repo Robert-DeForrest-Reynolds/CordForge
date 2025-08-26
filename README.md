@@ -19,6 +19,7 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 - Pillow 10.0.0 or higher
 
 ### Installing CordForge
+*currently unsupported*
 ```bash
 pip install cordforge
 ```
