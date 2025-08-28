@@ -1,9 +1,10 @@
 from sys import exit
-from os import remove
+from os import remove, getcwd
 from os.path import join
 from subprocess import *
 from glob import glob
 from sys import argv
+from pathlib import Path
 
 
 class Launcher:
@@ -15,12 +16,16 @@ class Launcher:
                                   "stop": _.Stop,
                                   "//": _.Emergency_Stop,
                                   "clear logs": _.Clear_Logs}
-        _.ProjectFilePath = argv[1]
-        _.KeySelection = argv[2]
-
-        _.VirtualEnvironmentPath = join(".venv","Scripts","python")
-
-        _.CallCommand = f"{_.VirtualEnvironmentPath} -B {_.ProjectFilePath} {_.KeySelection}"
+        _.WorkingDirectory = getcwd()
+        if len(argv) == 2:
+            _.KeySelection = argv[1]
+        else:
+            print("No key chosen, finding first in Keys file.")
+            _.KeySelection = Path(join(_.WorkingDirectory, "Keys")).read_text().split("\n")[0].split("=")[0]
+        _.Settings = Path(join(_.WorkingDirectory, "Settings")).read_text().split("\n")
+        _.VirtualEnvironmentPath = Path(_.Settings[0].split("=")[1])
+        _.EntryPath = Path(_.Settings[1].split("=")[1])
+        _.CallCommand = f"{_.VirtualEnvironmentPath} -B {_.EntryPath} {_.KeySelection}"
         
         _.User_Input()
 

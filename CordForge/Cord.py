@@ -87,7 +87,7 @@ class Cord(Bot):
     def _Get_Token(_, Key:str) -> str:
         with open(join(_.SourceDirectory, "Keys")) as KeyFile:
             for Line in KeyFile:
-                LineData = Line.split("~")
+                LineData = Line.split("=")
                 if Key.lower() == LineData[0].lower():
                     return LineData[1].strip()
         return "Could Not Find Token"
