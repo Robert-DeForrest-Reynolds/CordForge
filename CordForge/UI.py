@@ -1,3 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Cord import Cord
+
 from PIL import Image as PillowImage
 from PIL import ImageDraw, ImageFont
 from .Colors import *
@@ -12,9 +18,9 @@ class Component:
     Height:int
     X:int
     Y:int
-    Background:tuple[int,int,int,int]
+    Background:Color
     Border:bool
-    BorderColor:tuple[int,int,int,int]
+    BorderColor:Color
     BorderWidth:int
     Parent:"Component"
     Children:list["Component"]
@@ -22,7 +28,8 @@ class Component:
     Font:ImageFont
 
 
-    def __init__(_, Cord, X:int=0, Y:int=0, Width:int=0, Height:int=0, Parent:"Component"=None, Background:tuple[int,int,int,int]=GRAY):
+    def __init__(_, Cord:Cord=None, X:int=0, Y:int=0, Parent:"Component"=None,
+                 Width:int=0, Height:int=0, Background:Color=GRAY):
         if Parent:
             if Parent.Border:
                 _.X = Parent.X + X + Parent.BorderWidth
@@ -78,7 +85,8 @@ class Component:
 
 
 class Container(Component):
-    def __init__(_, Cord, X:int, Y:int, Width:int, Height:int, Parent, Background):
+    def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
+                 Width:int, Height:int, Background:Color):
         super().__init__(Cord=Cord, X=X, Y=Y, Width=Width, Height=Height, Parent=Parent, Background=Background)
 
 
@@ -92,8 +100,8 @@ class Container(Component):
 
 
 class List(Component):
-    def __init__(_, Cord, X:int, Y:int, Parent:Component,
-                 Items:list[str], Font, Separation:int,
+    def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
+                 Items:list[str], Font:ImageFont, Separation:int,
                  Horizontal:bool, VerticalCenter:bool, HorizontalCenter:bool) -> None:
         super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent)
         if Font != None: _.Font = Font
@@ -131,7 +139,7 @@ class List(Component):
 
 
 class Line(Component):
-    def __init__(_, Cord, X, Y, Start:Vector2, End:Vector2, Parent:Component, Width:int, Color:tuple[int,int,int,int], Curve:bool):
+    def __init__(_, Cord:Cord, X, Y, Start:Vector2, End:Vector2, Parent:Component, Width:int, Color:Color, Curve:bool):
         super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent, Width=Width)
         _.Start = Start
         _.End = End

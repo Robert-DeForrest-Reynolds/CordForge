@@ -133,7 +133,7 @@ class Cord(Bot):
         return _.ImageFile
     
 
-    async def Container(_, X:int=0, Y:int=0, Parent=None, Width:int=0, Height:int=0,  Background:tuple[int,int,int,int]=GRAY) -> Component:
+    async def Container(_, X:int=0, Y:int=0, Parent=None, Width:int=0, Height:int=0,  Background:Color=GRAY) -> Component:
         NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background)
         _.ImageComponents.append(NewContainer)
         return NewContainer
@@ -141,7 +141,7 @@ class Cord(Bot):
 
     async def Line(_, X:int=0, Y:int=0, Parent:Component=None,
                    Start:Vector2=Vector2(0,0), End:Vector2=Vector2(0,0),
-                   Color:tuple[int,int,int,int]=WHITE, Width:int=1,
+                   Color:Color=WHITE, Width:int=1,
                    Curve:bool=False) -> None:
         NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent, Start=Start, End=End, Width=Width, Color=Color, Curve=Curve)
         if Parent == None:
