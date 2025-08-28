@@ -116,7 +116,7 @@ class List(Component):
         for Item in _.Items:
             Numeric = None
             try:Numeric = await Format_Numeric(float(Decimal(Item.Text.replace(",",""))))
-            except InvalidOperation: print("Invalid Numeric Instantiation")
+            except InvalidOperation: pass
             FontWidth = await _.Get_Text_Width(Numeric) if Numeric else await _.Get_Text_Width(Item.Text)
             if Item.Image:
                 ImageX = _.XCenter - FontWidth//2 - Item.Image.width + Item.Separation

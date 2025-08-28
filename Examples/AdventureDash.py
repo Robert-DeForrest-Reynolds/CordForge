@@ -1,5 +1,5 @@
 # my_dashboard_project.py
-from CordForge import Cord, Colors
+from CordForge import *
 
 # --- Screen Builders ---
 async def MainMenu():
@@ -7,21 +7,21 @@ async def MainMenu():
     await Bot.New_Image()
     
     # Left container: Player info
-    left = await Bot.Container(Width=Bot.XCenter, Height=Bot.ImageHeight)
+    left = await Bot.Container(Width=Bot.XCenter, Height=Bot.Height)
     left.Border = True
-    await Bot.Vertical_List(Parent=left, Items=[
-        "Player Name: Alice",
-        "Level: 12",
-        "XP: 540 / 800"
+    await Bot.List(Parent=left, Items=[
+        ListItem("Player Name: Alice"),
+        ListItem("Level: 12"),
+        ListItem("XP: 540 / 800")
     ])
     
     # Right container: Resources
-    right = await Bot.Container(Width=Bot.XCenter, Height=Bot.ImageHeight, X=left.Width)
+    right = await Bot.Container(Width=Bot.XCenter, Height=Bot.Height, X=left.Width)
     right.Border = True
-    await Bot.Vertical_List(Parent=right, Items=[
-        "Gold: 420",
-        "Food: 120",
-        "Wood: 300"
+    await Bot.List(Parent=right, Items=[
+        ListItem("Gold: 420"),
+        ListItem("Food: 120"),
+        ListItem("Wood: 300")
     ])
     
     # Add action buttons
@@ -32,12 +32,12 @@ async def MainMenu():
 async def ShowInventory(Interaction):
     await Bot.New_Image()
     
-    container = await Bot.Container(Width=Bot.ImageWidth, Height=Bot.ImageHeight)
+    container = await Bot.Container(Width=Bot.Width, Height=Bot.Height)
     container.Border = True
-    await Bot.Vertical_List(Parent=container, Items=[
-        "Sword x1",
-        "Shield x1",
-        "Potion x5"
+    await Bot.List(Parent=container, Items=[
+        ListItem("Sword x1"),
+        ListItem("Shield x1"),
+        ListItem("Potion x5")
     ])
     
     # Return to main menu
@@ -49,12 +49,12 @@ async def ShowInventory(Interaction):
 async def ShowStats(Interaction):
     await Bot.New_Image()
     
-    container = await Bot.Container(Width=Bot.ImageWidth, Height=Bot.ImageHeight)
+    container = await Bot.Container(Width=Bot.Width, Height=Bot.Height)
     container.Border = True
-    await Bot.Vertical_List(Parent=container, Items=[
-        "Attack: 250",
-        "Defense: 180",
-        "Speed: 75"
+    await Bot.List(Parent=container, Items=[
+        ListItem("Attack: 250"),
+        ListItem("Defense: 180"),
+        ListItem("Speed: 75")
     ])
     
     # Return to main menu
