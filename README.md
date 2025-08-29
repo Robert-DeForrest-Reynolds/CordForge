@@ -9,7 +9,6 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 # Installation
 
 ### Installing CordForge
-*currently unsupported*
 ```bash
 pip install cordforge
 ```
