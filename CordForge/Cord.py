@@ -17,6 +17,7 @@ from .Components import *
 from .Colors import *
 from .Font import Font
 from .Vector2 import Vector2
+from .Player import Player
 
 
 class Cord(Bot):
@@ -228,7 +229,8 @@ class Cord(Bot):
     async def Send_Dashboard_Command(_, InitialContext:Context=None) -> None:
         await InitialContext.message.delete()
         if _.Message is not None: await _.Message.delete()
-        await _._Entry()
+        User:Player = Player(InitialContext.author)
+        await _._Entry(User)
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()
         if _.BaseViewFrame.total_children_count > 0 and _.Image == None:
