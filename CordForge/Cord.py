@@ -1,5 +1,5 @@
 from os.path import join
-from PIL import Image
+from PIL import Image as PillowImage
 from io import BytesIO
 from discord import File as DiscordFile
 from discord import Message as DiscordMessage
@@ -104,9 +104,9 @@ class Cord(Bot):
 
 
     async def New_Image(_) -> None:
-        _.Image = Image.new("RGBA",
-                            (_.Height, _.Width),
-                            color=_.DashboardBackground)
+        _.Image = PillowImage.new("RGBA",
+                                  (_.Height, _.Width),
+                                  color=_.DashboardBackground)
 
 
     async def Send_Image(_, Interaction:DiscordInteraction, ImagePath:str) -> None:
@@ -129,7 +129,9 @@ class Cord(Bot):
         return _.ImageFile
     
 
-    async def Container(_, X:int=0, Y:int=0, Parent=None, Width:int|None=None, Height:int|None=None,  Background:Color=GRAY) -> Component:
+    async def Container(_, X:int=0, Y:int=0, Parent=None,
+                        Width:int|None=None, Height:int|None=None, 
+                        Background:Color=GRAY) -> Component:
         NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background)
         _.ImageComponents.append(NewContainer)
         return NewContainer
@@ -169,6 +171,13 @@ class Cord(Bot):
         NewText = Text(Cord=_, Position=Position, Parent=Parent, Content=Content, Color=Color, Background=Background, Font=Font, Center=Center)
         _.ImageComponents.append(NewText)
         return NewText
+    
+
+    async def Sprite(_, X:int=0, Y:int=0, Parent:Component=None,
+                    SpriteImage:PillowImage=None, Path:str=None) -> None:
+        NewSprite = Sprite(Cord=_, X=X, Y=Y, Parent=Parent, SpriteImage=SpriteImage, Path=Path)
+        _.ImageComponents.append(NewSprite)
+        return NewSprite
 
 
     async def Debug(_, VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
@@ -187,7 +196,7 @@ class Cord(Bot):
     async def Construct_Components(_):
         ImageComponent:Component
         for ImageComponent in _.ImageComponents:
-            ComponentImage:Image = await ImageComponent.Draw()
+            ComponentImage:PillowImage = await ImageComponent.Draw()
             _.Image.paste(im=ComponentImage, box=(ImageComponent.X, ImageComponent.Y), mask=ComponentImage.split()[3])
         _.ImageComponents = []
 

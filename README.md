@@ -98,5 +98,5 @@ Data
 - **"Invalid command"**: Make sure your bot prefix matches what you type
 
 # Getting Help
-- Look at the [Examples](EXAMPLES.md) for more complex use cases
-- Review the [API Reference](API_REFERENCE.md) for all available methods
+- Look at the [Examples](EXAMPLES.md) for more complex use cases.
+- Review the [API Reference](API_REFERENCE.md) for all available functionality.
