@@ -1,6 +1,5 @@
-from os import mkdir, listdir
-from os.path import join, exists
-from PIL import Image, ImageDraw, ImageFont
+from os.path import join
+from PIL import Image
 from io import BytesIO
 from discord import File as DiscordFile
 from discord import Message as DiscordMessage
@@ -14,11 +13,10 @@ from itertools import product
 import asyncio
 from typing import Callable, Any
 
-from .Vector2 import Vector2
-from .ListItem import ListItem
-from .UI import *
+from .Components import *
 from .Colors import *
-from .Font import Font as Font
+from .Font import Font
+from .Vector2 import Vector2
 
 
 class Cord(Bot):
@@ -41,7 +39,7 @@ class Cord(Bot):
         _.Width = 640
         _._Entry = Entry
         _.FontSize = 24
-        _.Font = CFFont(24)
+        _.Font = Font(24)
         print("Discord Bot Initializing")
         super().__init__(command_prefix=_.Prefix, intents=Intents.all())
 
@@ -93,7 +91,6 @@ class Cord(Bot):
 
 
     async def setup_hook(_):
-        print(_.commands)
         async def Wrapper(Context): await _.Send_Dashboard_Command(Context)
         _.add_command(Command(Wrapper, aliases=_.DashboardAlias))
         await super().setup_hook()
@@ -132,7 +129,7 @@ class Cord(Bot):
         return _.ImageFile
     
 
-    async def Container(_, X:int=0, Y:int=0, Parent=None, Width:int=0, Height:int=0,  Background:Color=GRAY) -> Component:
+    async def Container(_, X:int=0, Y:int=0, Parent=None, Width:int|None=None, Height:int|None=None,  Background:Color=GRAY) -> Component:
         NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background)
         _.ImageComponents.append(NewContainer)
         return NewContainer
@@ -140,9 +137,9 @@ class Cord(Bot):
 
     async def Line(_, X:int=0, Y:int=0, Parent:Component=None,
                    Start:Vector2=Vector2(0,0), End:Vector2=Vector2(0,0),
-                   Color:Color=WHITE, Width:int=1,
+                   Color:Color=WHITE, FillWidth:int=1,
                    Curve:bool=False) -> None:
-        NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent, Start=Start, End=End, Width=Width, Color=Color, Curve=Curve)
+        NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent, Start=Start, End=End, FillWidth=FillWidth, Color=Color, Curve=Curve)
         if Parent == None:
             _.ImageComponents.append(NewLine)
         else:
@@ -150,10 +147,12 @@ class Cord(Bot):
 
 
     async def List(_, X:int=0, Y:int=0, Parent:Component=None,
+                   Width:int|None=None, Height:int|None=None,
                    Items:list[str:ListItem] = [], Font=None,
                    Separation:int=4, Horizontal:bool=False,
                    VerticalCenter:bool=True, HorizontalCenter:bool=True) -> None:
         NewList = List(Cord=_, X=X, Y=Y, Parent=Parent,
+                       Width=Width, Height=Height,
                        Items=Items, Font=Font,
                        Separation=Separation,
                        Horizontal=Horizontal, VerticalCenter=VerticalCenter,
@@ -164,7 +163,7 @@ class Cord(Bot):
             Parent.Children.append(NewList)
     
 
-    async def Text(_, Content, Position:list|Vector2=None, Parent=None,
+    async def Text(_, Content, Position:list|Vector2|None=None, Parent=None,
                    Color:Color=WHITE, Background:Color=None, Font:Font=None,
                    Center:bool=False) -> Component:
         NewText = Text(Cord=_, Position=Position, Parent=Parent, Content=Content, Color=Color, Background=Background, Font=Font, Center=Center)
@@ -190,6 +189,7 @@ class Cord(Bot):
         for ImageComponent in _.ImageComponents:
             ComponentImage:Image = await ImageComponent.Draw()
             _.Image.paste(im=ComponentImage, box=(ImageComponent.X, ImageComponent.Y), mask=ComponentImage.split()[3])
+        _.ImageComponents = []
 
 
     async def Construct_View(_) -> None:
