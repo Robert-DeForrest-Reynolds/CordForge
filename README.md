@@ -28,7 +28,7 @@ First, create a Discord application and bot at [Discord Developer Portal](https:
 Create a `Keys` file in your project directory:
 `key_name~your_discord_bot_token_here`
 ```
-stuart~OTk3MDA...
+dev_name=OTk3MDA...
 ```
 
 ### Basic Bot Setup
@@ -54,7 +54,7 @@ Bot.Start()
 ### Launch Bot
 `cordforge bot_file.py token-key`
 ```bash
-cordforge bot.py mybot
+cordforge bot.py dev_name
 ```
 
 ### Next Steps
