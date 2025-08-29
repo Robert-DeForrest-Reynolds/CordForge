@@ -1,9 +1,5 @@
 Discord Bot Library - UI & Image Manipulation for Making Games
 
-**Requires discord.py & Pillow**
-
-**Will be a Python package on first full-release**
-
 ## Table of Contents
 1. [Installation](#installation)
 2. [Troubleshooting](#troubleshooting)
@@ -11,12 +7,6 @@ Discord Bot Library - UI & Image Manipulation for Making Games
 
 
 # Installation
-
-### Prerequisites
-- Python 3.13 or higher
-- Discord Bot Token
-- Discord.py 2.6.0 or higher
-- Pillow 10.0.0 or higher
 
 ### Installing CordForge
 *currently unsupported*
