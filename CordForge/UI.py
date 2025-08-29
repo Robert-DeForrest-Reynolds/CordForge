@@ -6,11 +6,13 @@ if TYPE_CHECKING:
 
 from PIL import Image as PillowImage
 from PIL import ImageDraw, ImageFont
+from decimal import Decimal, InvalidOperation
+
 from .Colors import *
 from .ListItem import ListItem
 from .Vector2 import Vector2
-from decimal import Decimal, InvalidOperation
 from .Utilities import Format_Numeric
+from .Font import Font as CFFont
 
 
 class Component:
@@ -19,17 +21,19 @@ class Component:
     X:int
     Y:int
     Background:Color
+    Color:Color
     Border:bool
     BorderColor:Color
     BorderWidth:int
     Parent:"Component"
     Children:list["Component"]
     Image:PillowImage
-    Font:ImageFont
+    Font:CFFont
 
 
     def __init__(_, Cord:Cord=None, X:int=0, Y:int=0, Parent:"Component"=None,
-                 Width:int=0, Height:int=0, Background:Color=GRAY):
+                 Width:int=0, Height:int=0, Color:Color=None, Background:Color=GRAY, Font:CFFont=None):
+        _.Cord = Cord
         if Parent:
             if Parent.Border:
                 _.X = Parent.X + X + Parent.BorderWidth
@@ -44,18 +48,18 @@ class Component:
         else:
             _.X = X
             _.Y = Y
-            _.Width = Width
-            _.Height = Height
-        _.Cord = Cord
+            _.Width = _.Cord.Width
+            _.Height = _.Cord.Height
         _.Parent = Parent
+        _.Color = Color
         _.Background = Background
         _.Border = False
         _.BorderColor = WHITE
         _.BorderWidth = 1
         _.Children = []
-        _.Font = ImageFont.load_default(24)
-        _.Ascent, _.Descent = _.Font.getmetrics()
-        _.FontHeight = _.Ascent + _.Descent
+        _.Font = _.Cord.Font if not Parent else Font
+        _.ImageWidth = _.Cord.Width if not Parent else Parent.Width
+        _.ImageHeight = _.Cord.Height if not Parent else Parent.Height
 
 
     @property
@@ -77,11 +81,10 @@ class Component:
 
 
     async def Get_Text_Width(_, Text, Font=None) -> list:
-        if Font is None:
-            Font = _.Font
+        _.Font = Font if Font is not None else _.Cord.Font
         MeasuringImage = PillowImage.new("RGBA", (10, 10))
         Drawing = ImageDraw.Draw(MeasuringImage)
-        return int(Drawing.textlength(Text, font=Font))
+        return int(Drawing.textlength(Text, font=_.Font.Font))
 
 
 class Container(Component):
@@ -101,10 +104,10 @@ class Container(Component):
 
 class List(Component):
     def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
-                 Items:list[str], Font:ImageFont, Separation:int,
+                 Items:list[str], Font:CFFont, Separation:int,
                  Horizontal:bool, VerticalCenter:bool, HorizontalCenter:bool) -> None:
         super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent)
-        if Font != None: _.Font = Font
+        _.Font = Font if Font is not None else Cord.Font
         _.Height = _.Cord.Height
         _.Items = Items
         _.Separation = Separation
@@ -118,7 +121,7 @@ class List(Component):
         Drawing = ImageDraw.Draw(_.Image)
         if _.Border:
             Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
-        Y = _.YCenter - ((_.FontHeight + _.Separation) * len(_.Items) // 2) if _.VerticalCenter else _.Y
+        Y = _.YCenter - ((_.Font.Height + _.Separation) * len(_.Items) // 2) if _.VerticalCenter else _.Y
         TotalHeight = 0
         Item:ListItem
         for Item in _.Items:
@@ -132,9 +135,9 @@ class List(Component):
             TextX = _.XCenter - FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
             Drawing.text((TextX, Y + TotalHeight),
                             Numeric if Numeric else Item.Text,
-                            font=_.Font,
+                            font=_.Font.Font,
                             fill=WHITE)
-            TotalHeight += _.FontHeight + _.Separation
+            TotalHeight += _.Font.Height + _.Separation
         return _.Image
 
 
@@ -146,8 +149,6 @@ class Line(Component):
         _.Width = Width
         _.Color = Color
         _.Curve = Curve
-        _.ImageWidth = _.Cord.Width if not Parent else Parent.Width
-        _.ImageHeight = _.Cord.Height if not Parent else Parent.Height
     
     
     async def Draw(_) -> PillowImage:
@@ -157,4 +158,40 @@ class Line(Component):
                      fill=_.Color,
                      width=_.Width,
                      joint="curve" if _.Curve else None)
+        return _.Image
+
+
+class Text(Component):
+    def __init__(_, Cord:Cord, Position:list|Vector2, Parent:"Component",
+                 Content:str, Color:Color, Background:Color,
+                 Font:CFFont, Center:bool):
+        super().__init__(Cord=Cord, Parent=Parent, Color=Color, Font=Font, Background=Background)
+        _.Content = Content
+        _.Center = Center
+        if type(Position) is list:
+            _.Position = Vector2(Position[0], Position[1])
+        else:
+            _.Position = Position
+        _.Color = Color
+        _.Font = Font if Font is not None else Cord.Font
+
+
+    async def Draw(_) -> PillowImage:
+        _.Image = PillowImage.new("RGBA", (_.Width, _.Height), color=TRANSPRENCY)
+        Drawing = ImageDraw.Draw(_.Image)
+        if _.Center:
+            _.ContentWidth = await _.Get_Text_Width(_.Content)
+            if _.Position != None:
+                raise("Text Component cannot be given a position, and be centered.")
+            _.Position = Vector2()
+            if _.Parent:
+                _.Position.X = _.Parent.Width//2 - _.ContentWidth//2
+                _.Position.Y = _.Parent.Height//2 - _.Font.Height//2
+            else:
+                _.Position.X = _.Cord.Width//2 - _.ContentWidth//2
+                _.Position.Y = _.Cord.Height//2 - _.Font.Height//2
+        Drawing.text(text=_.Content,
+                     xy=(_.Position.X, _.Position.Y),
+                     fill=_.Color,
+                     font=_.Font.Font)
         return _.Image

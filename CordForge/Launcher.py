@@ -11,11 +11,11 @@ class Launcher:
     def __init__(_):
         _.Key = None
         _.Commands = {"start": _.Start,
-                                  "restart": _.Restart,
-                                  "exit": _.Exit,
-                                  "stop": _.Stop,
-                                  "//": _.Emergency_Stop,
-                                  "clear logs": _.Clear_Logs}
+                      "restart": _.Restart,
+                      "exit": _.Exit,
+                      "stop": _.Stop,
+                      "//": _.Emergency_Stop,
+                      "clear logs": _.Clear_Logs}
         _.WorkingDirectory = getcwd()
         if len(argv) == 2:
             _.KeySelection = argv[1]

@@ -17,6 +17,7 @@ class Color(tuple):
 
 
 WHITE = Color(255,255,255,255)
+BLACK = Color(0,0,0,255)
 GRAY = Color(30,30,30,255)
 DEBUG_COLOR = Color(255,0,255,255)
 TRANSPRENCY = Color(0,0,0,0)

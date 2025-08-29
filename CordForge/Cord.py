@@ -11,12 +11,14 @@ from discord.ui import Button, View
 from discord.ext.commands import Bot, Context
 from sys import argv, path
 from itertools import product
+import asyncio
 from typing import Callable, Any
+
 from .Vector2 import Vector2
 from .ListItem import ListItem
 from .UI import *
 from .Colors import *
-import asyncio
+from .Font import Font as Font
 
 
 class Cord(Bot):
@@ -38,6 +40,8 @@ class Cord(Bot):
         _.Height = 640
         _.Width = 640
         _._Entry = Entry
+        _.FontSize = 24
+        _.Font = CFFont(24)
         print("Discord Bot Initializing")
         super().__init__(command_prefix=_.Prefix, intents=Intents.all())
 
@@ -48,14 +52,9 @@ class Cord(Bot):
     def YCenter(_): return _.Height // 2
     @property
     def ImageCenter(_): return Vector2(_.XCenter, _.YCenter)
+    
 
-
-    # This is a "pre-run async" hook essentially
-    # For running setup functions before the Bot starts it's loop
-    # This makes it so the user can make their async functions reusable for setup, and runtime
-    # And to use built-in async functions before the Bot's running loop
-    # Like testing images outside of discord
-    def _(_, Task, *Arguments) -> Any:
+    def Run(_, Task, *Arguments) -> Any:
         try:
             asyncio.get_running_loop()
         except RuntimeError:
@@ -163,6 +162,14 @@ class Cord(Bot):
             _.ImageComponents.append(NewList)
         else:
             Parent.Children.append(NewList)
+    
+
+    async def Text(_, Content, Position:list|Vector2=None, Parent=None,
+                   Color:Color=WHITE, Background:Color=None, Font:Font=None,
+                   Center:bool=False) -> Component:
+        NewText = Text(Cord=_, Position=Position, Parent=Parent, Content=Content, Color=Color, Background=Background, Font=Font, Center=Center)
+        _.ImageComponents.append(NewText)
+        return NewText
 
 
     async def Debug(_, VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
@@ -211,7 +218,7 @@ class Cord(Bot):
 
     async def Send_Dashboard_Command(_, InitialContext:Context=None) -> None:
         await InitialContext.message.delete()
-        if _.Message is not None: _.Message.delete()
+        if _.Message is not None: await _.Message.delete()
         await _._Entry()
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()
