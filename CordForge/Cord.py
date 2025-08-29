@@ -18,12 +18,15 @@ from .Colors import *
 from .Font import Font
 from .Vector2 import Vector2
 from .Player import Player
+from .Data import Data
 
 
 class Cord(Bot):
     Message:DiscordMessage
-    def __init__(_, DashboardAlias:str, Entry) -> None:
+    def __init__(_, DashboardAlias:str, Entry, Autosave=False) -> None:
         _.DashboardAlias = DashboardAlias
+        _._Entry = Entry
+        _.Autosave = Autosave
         _._Handle_Alias()
         _.SourceDirectory = path[0]
         _.InstanceUser:str = argv[1]
@@ -38,9 +41,10 @@ class Cord(Bot):
         _.DashboardBackground = GRAY
         _.Height = 640
         _.Width = 640
-        _._Entry = Entry
         _.FontSize = 24
         _.Font = Font(24)
+        _.Data = Data(_)
+        _.Players:dict[int:Player] = {}
         print("Discord Bot Initializing")
         super().__init__(command_prefix=_.Prefix, intents=Intents.all())
 
@@ -99,6 +103,8 @@ class Cord(Bot):
 
     async def on_ready(_) -> None:
         print("Bot is alive.\n")
+        if _.Autosave:
+            await _.Data.Autosave()
 
 
     def Start(_) -> None: _.run(_._Get_Token(_.InstanceUser))
@@ -227,9 +233,10 @@ class Cord(Bot):
 
 
     async def Send_Dashboard_Command(_, InitialContext:Context=None) -> None:
+        if InitialContext.author.id not in _.Players.keys(): _.Data.Initial_Cache(InitialContext.author)
         await InitialContext.message.delete()
         if _.Message is not None: await _.Message.delete()
-        User:Player = Player(InitialContext.author)
+        User:Player = _.Players[InitialContext.author.id]
         await _._Entry(User)
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()

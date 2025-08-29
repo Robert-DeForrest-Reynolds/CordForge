@@ -5,6 +5,7 @@ env
 .pypirc
 CordForge.egg-info
 
+/Data
 /dist
 /BuildEnv
 /Package.py
