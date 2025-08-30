@@ -23,7 +23,7 @@ from .Data import Data
 
 class Cord(Bot):
     Message:DiscordMessage
-    def __init__(_, DashboardAlias:str, Entry, Autosave=False) -> None:
+    def __init__(_, DashboardAlias:str, Entry:Callable, Autosave:bool=False) -> None:
         _.DashboardAlias = DashboardAlias
         _._Entry = Entry
         _.Autosave = Autosave
@@ -110,6 +110,10 @@ class Cord(Bot):
 
 
     def Start(_) -> None: _.run(_._Get_Token(_.InstanceUser))
+
+
+    def Load_Image(_, ImagePath:str) -> PillowImage:
+        return PillowImage.open(ImagePath)
 
 
     async def New_Image(_) -> None:

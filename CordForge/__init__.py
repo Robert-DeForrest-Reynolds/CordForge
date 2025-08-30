@@ -5,3 +5,4 @@ from .Font import Font
 from .Components import *
 from .Utilities import *
 from .Player import Player
+from PIL import Image

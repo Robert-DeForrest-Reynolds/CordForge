@@ -1,4 +1,9 @@
 Discord Bot Library - UI & Image Manipulation for Making Games
+Essentially just a wrapper over discord.py and Pillow to make life a little easier for image-based, and gameplay focused Discord bots.
+Provides:
+ - Image creation with a UI system, and sprite management
+ - Out-of-the-box persistent data management for players with extensibility
+ - Various utilities for testing, and debugging to assist in development
 
 ## Table of Contents
 1. [Installation](#installation)
