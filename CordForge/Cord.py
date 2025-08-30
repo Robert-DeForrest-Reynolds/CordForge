@@ -103,6 +103,8 @@ class Cord(Bot):
 
     async def on_ready(_) -> None:
         print("Bot is alive.\n")
+        _.Guilds = _.guilds
+        await _.Data.Load_Data()
         if _.Autosave:
             await _.Data.Autosave()
 
