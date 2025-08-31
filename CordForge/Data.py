@@ -33,7 +33,6 @@ class Data:
             raise AttributeError(f"Data attributes can only be dictonaries")
 
 
-
     def Initial_Cache(_, User:Member) -> None:
         _.Cord.Players.update({User.id:Player(User)})
 
@@ -47,7 +46,8 @@ class Data:
                 with open(join(PlayersDirectory, f"{User.ID}.cf"), "w") as File:
                     DataString = ""
                     for Name, Value in User.Data.items():
-                        DataString += f"{Name}={Value}"
+                        DataString += f"{Name}={Value}\n"
+                    DataString = DataString[:-1]
                     File.write(DataString)
 
             Name:str
@@ -57,7 +57,8 @@ class Data:
                     with open(join("Data", f"{Name}.cf")) as File:
                         DataString = ""
                         for Name, Value in DataDict.items():
-                            DataString += f"{Name}={Value}"
+                            DataString += f"{Name}={Value}\n"
+                        DataString = DataString[:-1]
                         File.write(DataString)
 
 
