@@ -15,7 +15,7 @@ from typing import Callable, Any
 
 from .Components import *
 from .Colors import *
-from .Font import Font
+from .Font import Font as CFFont
 from .Vector2 import Vector2
 from .Player import Player
 from .Data import Data
@@ -41,8 +41,7 @@ class Cord(Bot):
         _.DashboardBackground = GRAY
         _.Height = 640
         _.Width = 640
-        _.FontSize = 24
-        _.Font = Font(24)
+        _.Font = CFFont(24)
         _.Data = Data(_)
         _.Players:dict[int:Player] = {}
         print("Discord Bot Initializing")
@@ -144,9 +143,12 @@ class Cord(Bot):
 
     async def Container(_, X:int=0, Y:int=0, Parent=None,
                         Width:int|None=None, Height:int|None=None, 
-                        Background:Color=GRAY) -> Component:
-        NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background)
-        _.ImageComponents.append(NewContainer)
+                        Background:Color=GRAY, Border:bool=False) -> Component:
+        NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background, Border=Border)
+        if Parent == None:
+            _.ImageComponents.append(NewContainer)
+        else:
+            Parent.Children.append(NewContainer)
         return NewContainer
 
 
@@ -178,18 +180,24 @@ class Cord(Bot):
             Parent.Children.append(NewList)
     
 
-    async def Text(_, Content, Position:list|Vector2|None=None, Parent=None,
-                   Color:Color=WHITE, Background:Color=None, Font:Font=None,
+    async def Text(_, Content, Position:list|Vector2|None=None, Parent:Component=None,
+                   Color:Color=WHITE, Background:Color=None, Font:CFFont=None,
                    Center:bool=False) -> Component:
         NewText = Text(Cord=_, Position=Position, Parent=Parent, Content=Content, Color=Color, Background=Background, Font=Font, Center=Center)
-        _.ImageComponents.append(NewText)
+        if Parent == None:
+            _.ImageComponents.append(NewText)
+        else:
+            Parent.Children.append(NewText)
         return NewText
     
 
     async def Sprite(_, X:int=0, Y:int=0, Parent:Component=None,
                     SpriteImage:PillowImage=None, Path:str=None) -> None:
         NewSprite = Sprite(Cord=_, X=X, Y=Y, Parent=Parent, SpriteImage=SpriteImage, Path=Path)
-        _.ImageComponents.append(NewSprite)
+        if Parent == None:
+            _.ImageComponents.append(NewSprite)
+        else:
+            Parent.Children.append(NewSprite)
         return NewSprite
 
 
@@ -207,6 +215,7 @@ class Cord(Bot):
 
 
     async def Construct_Components(_):
+        print("Constructing Dashboard Components")
         ImageComponent:Component
         for ImageComponent in _.ImageComponents:
             ComponentImage:PillowImage = await ImageComponent.Draw()

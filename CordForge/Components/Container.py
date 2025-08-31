@@ -7,8 +7,9 @@ from .Component import *
 
 class Container(Component):
     def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
-                 Width:int, Height:int, Background:Color):
-        super().__init__(Cord=Cord, X=X, Y=Y, Width=Width, Height=Height, Parent=Parent, Background=Background)
+                 Width:int, Height:int, Background:Color,
+                 Border:bool):
+        super().__init__(Cord=Cord, X=X, Y=Y, Width=Width, Height=Height, Parent=Parent, Background=Background, Border=Border)
 
 
     async def Draw(_) -> PillowImage:

@@ -27,7 +27,8 @@ class Component:
 
     def __init__(_, Cord:Cord=None, X:int=0, Y:int=0, Parent:"Component"=None,
                  Width:int|None=0, Height:int|None=0,
-                 Color:Color=None,Background:Color=GRAY, Font:CFFont=None):
+                 Color:Color=None,Background:Color=GRAY, Font:CFFont=None,
+                 Border:bool=False):
         _.Cord = Cord
         if Parent:
             if Parent.Border:
@@ -48,13 +49,14 @@ class Component:
         _.Parent = Parent
         _.Color = Color
         _.Background = Background
-        _.Border = False
+        _.Border = Border
         _.BorderColor = WHITE
         _.BorderWidth = 1
         _.Children = []
-        _.Font = _.Cord.Font if not Parent else Font
+        _.Font = Font if Font else (Parent.Font if Parent else _.Cord.Font)
         _.ImageWidth = _.Cord.Width if not Parent else Parent.Width
         _.ImageHeight = _.Cord.Height if not Parent else Parent.Height
+        _.Path = _.Parent.Path + f".{_.__class__.__name__}" if Parent else _.__class__.__name__
 
 
     @property
@@ -65,18 +67,22 @@ class Component:
     def ImageCenter(_): return Vector2(_.XCenter, _.YCenter)
 
 
+    def __str__(_): return _.Path
+
+
     async def Draw() -> PillowImage:...
 
 
     async def Construct_Components(_):
+        print(f"Constructing {_} Components")
         Child:Component
         for Child in _.Children:
             ChildImage = await Child.Draw()
             _.Image.paste(ChildImage, (Child.X, Child.Y), mask=ChildImage.split()[3])
 
 
-    async def Get_Text_Width(_, Text, Font=None) -> list:
-        _.Font = Font if Font is not None else _.Cord.Font
+    async def Get_Text_Width(_, Text:str, Font:CFFont=None) -> int:
+        TestFont:CFFont = Font if Font is not None else _.Cord.Font
         MeasuringImage = PillowImage.new("RGBA", (10, 10))
         Drawing = ImageDraw.Draw(MeasuringImage)
-        return int(Drawing.textlength(Text, font=_.Font.Font))
+        return int(Drawing.textlength(Text, font=TestFont.Font))

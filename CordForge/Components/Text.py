@@ -16,7 +16,7 @@ class Text(Component):
         else:
             _.Position = Position
         _.Color = Color
-        _.Font = Font if Font is not None else Cord.Font
+        _.Font = Font if Font is not None else _.Cord.Font
 
 
     async def Draw(_) -> PillowImage:
