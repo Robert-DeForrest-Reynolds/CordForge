@@ -161,13 +161,14 @@ class Cord(Bot):
             _.ImageComponents.append(NewLine)
         else:
             Parent.Children.append(NewLine)
+        return NewLine
 
 
     async def List(_, X:int=0, Y:int=0, Parent:Component=None,
                    Width:int|None=None, Height:int|None=None,
                    Items:list[str:ListItem] = [], Font=None,
                    Separation:int=4, Horizontal:bool=False,
-                   VerticalCenter:bool=True, HorizontalCenter:bool=True) -> None:
+                   VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
         NewList = List(Cord=_, X=X, Y=Y, Parent=Parent,
                        Width=Width, Height=Height,
                        Items=Items, Font=Font,
@@ -178,6 +179,7 @@ class Cord(Bot):
             _.ImageComponents.append(NewList)
         else:
             Parent.Children.append(NewList)
+        return NewList
     
 
     async def Text(_, Content, Position:list|Vector2|None=None, Parent:Component=None,
@@ -252,7 +254,10 @@ class Cord(Bot):
         await InitialContext.message.delete()
         if _.Message is not None: await _.Message.delete()
         User:Player = _.Players[InitialContext.author.id]
-        await _._Entry(User)
+        try:
+            await _._Entry(User)
+        except TypeError as E:
+            print("Entry needs to accept `user` as an argument")
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()
         if _.BaseViewFrame.total_children_count > 0 and _.Image == None:

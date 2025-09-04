@@ -70,6 +70,13 @@ class Component:
     def __str__(_): return _.Path
 
 
+    async def Debug(_, VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
+        if VerticalCenter:
+            await _.Cord.Line(Parent=_, Start=Vector2(_.XCenter, 0), End=Vector2(_.XCenter, _.Height), Width=3, Color=DEBUG_COLOR)
+        if HorizontalCenter:
+            await _.Cord.Line(Parent=_, Start=Vector2(0, _.YCenter), End=Vector2(_.Width, _.YCenter), Width=3, Color=DEBUG_COLOR)
+
+
     async def Draw() -> PillowImage:...
 
 

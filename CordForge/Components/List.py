@@ -32,9 +32,12 @@ class List(Component):
         if _.Border:
             Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
             
-        TotalHeight = sum((Item.Font.Height if Item.Font else _.Font.Height) + _.Separation for Item in _.Items)
-        Y = _.YCenter - (TotalHeight // 2) if _.VerticalCenter else _.Y
-        TotalHeight = 0
+        TotalHeight = sum(max((Item.Font.Height if Item.Font else _.Font.Height),(Item.Image.height if Item.Image else 0)) + _.Separation for Item in _.Items)
+        if _.VerticalCenter:
+            Y = _.YCenter - (TotalHeight // 2) if _.VerticalCenter else _.Y
+        else:
+            Y = (TotalHeight // 2) if _.VerticalCenter else _.Y
+        Ruler = 0
         Item:ListItem
         for Item in _.Items:
             Font = Item.Font if Item.Font else _.Font
@@ -43,12 +46,19 @@ class List(Component):
             except InvalidOperation: pass
             FontWidth = await _.Get_Text_Width(Numeric, Font=Font) if Numeric else await _.Get_Text_Width(Item.Text, Font=Font)
             if Item.Image:
-                ImageX = _.XCenter - FontWidth//2 - Item.Image.width + Item.Separation
-                _.Image.paste(im=Item.Image, box=(ImageX, Y + TotalHeight), mask=Item.Image)
-            TextX = _.XCenter - FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
-            Drawing.text((TextX, Y + TotalHeight),
+                if _.HorizontalCenter:
+                    ImageX = _.XCenter - FontWidth//2 - Item.Image.width + Item.Separation
+                else:
+                    ImageX = FontWidth//2 - Item.Image.width + Item.Separation
+                ImageY = Y + Ruler + Item.Image.height//2
+                _.Image.paste(im=Item.Image, box=(ImageX, ImageY), mask=Item.Image)
+            if _.HorizontalCenter:
+                TextX = _.XCenter - FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
+            else:
+                TextX = FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
+            Drawing.text((TextX, Y + Ruler),
                           Numeric if Numeric else Item.Text,
                           font=Font.Font,
                           fill=WHITE)
-            TotalHeight += Font.Height + _.Separation
+            Ruler += Font.Height + _.Separation
         return _.Image
