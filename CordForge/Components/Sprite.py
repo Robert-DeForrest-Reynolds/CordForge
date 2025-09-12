@@ -5,17 +5,17 @@ from .Component import *
 
 
 class Sprite(Component):
-    def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
-                 SpriteImage:PillowImage, Path:str) -> None:
-        super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent,
-                         Width=None, Height=None)
-        _.SpriteImage = SpriteImage
-        _.Path = Path
-        if Path and SpriteImage is None:
-            _.SpriteImage = PillowImage.open(Path)
+    def __init__(_, cord:Cord, x:int, y:int, parent:Component,
+                 sprite_image:PillowImage, path:str) -> None:
+        super().__init__(cord=cord, x=x, y=y, parent=parent,
+                         width=None, height=None)
+        _.sprite_image = sprite_image
+        _.path = path
+        if path and sprite_image is None:
+            _.sprite_image = PillowImage.open(path)
 
 
-    async def Draw(_) -> PillowImage:
-        _.Image = PillowImage.new("RGBA", (_.Width, _.Height), color=_.Background)
-        _.Image.paste(im=_.SpriteImage, box=(_.X, _.Y), mask=_.SpriteImage.split()[3])
-        return _.Image
+    async def draw(_) -> PillowImage:
+        _.image = PillowImage.new("RGBA", (_.width, _.height), color=_.background)
+        _.image.paste(im=_.sprite_image, box=(_.x, _.y), mask=_.sprite_image.split()[3])
+        return _.image

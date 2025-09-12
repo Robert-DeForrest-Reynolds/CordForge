@@ -5,35 +5,35 @@ from .Component import *
 
 
 class Text(Component):
-    def __init__(_, Cord:Cord, Position:list|Vector2|None, Parent:"Component",
-                 Content:str, Color:Color, Background:Color,
-                 Font:Font, Center:bool):
-        super().__init__(Cord=Cord, Parent=Parent, Width=None, Height=None, Color=Color, Font=Font, Background=Background)
-        _.Content = Content
-        _.Center = Center
-        if type(Position) is list:
-            _.Position = Vector2(Position[0], Position[1])
+    def __init__(_, cord:Cord, position:list|Vector2|None, parent:"Component",
+                 content:str, color:Color, background:Color,
+                 font:Font, center:bool):
+        super().__init__(cord=cord, parent=parent, width=None, height=None, color=color, font=font, background=background)
+        _.content = content
+        _.center = center
+        if type(position) is list:
+            _.position = Vector2(position[0], position[1])
         else:
-            _.Position = Position
-        _.Color = Color
-        _.Font = Font if Font is not None else _.Cord.Font
+            _.position = position
+        _.color = color
+        _.font = font if font is not None else _.cord.font
 
 
-    async def Draw(_) -> PillowImage:
-        super().Draw()
-        if _.Center:
-            _.ContentWidth = await _.Get_Text_Width(_.Content)
-            if _.Position != None:
+    async def draw(_) -> PillowImage:
+        super().draw()
+        if _.center:
+            _.content_width = await _.get_text_width(_.content)
+            if _.position != None:
                 raise("Text Component cannot be given a position, and be centered.")
-            _.Position = Vector2()
-            if _.Parent:
-                _.Position.X = _.Parent.Width//2 - _.ContentWidth//2
-                _.Position.Y = _.Parent.Height//2 - _.Font.Height//2
+            _.position = Vector2()
+            if _.parent:
+                _.position.x = _.parent.width//2 - _.content_width//2
+                _.position.y = _.parent.height//2 - _.font.height//2
             else:
-                _.Position.X = _.Cord.Width//2 - _.ContentWidth//2
-                _.Position.Y = _.Cord.Height//2 - _.Font.Height//2
-        _.Drawing.text(text=_.Content,
-                     xy=(_.Position.X, _.Position.Y),
-                     fill=_.Color,
-                     font=_.Font.Font)
-        return _.Image
+                _.position.x = _.cord.width//2 - _.content_width//2
+                _.position.y = _.cord.height//2 - _.font.height//2
+        _.drawing.text(text=_.content,
+                     xy=(_.position.x, _.position.y),
+                     fill=_.color,
+                     font=_.font.font)
+        return _.image

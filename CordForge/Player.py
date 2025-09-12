@@ -2,23 +2,23 @@ from discord import Member
 
 
 class Player:
-    Account:Member
-    Name:str
-    Nickname:str
-    ID:int
+    account:Member
+    name:str
+    nickname:str
+    id:int
 
-    def __init__(_, Account:Member) -> None:
-        object.__setattr__(_, "Account", Account)
-        object.__setattr__(_, "ID", Account.id)
-        _.Name = Account.name
-        _.Nickname = Account.nick
-        _.Data = {}
+    def __init__(_, account:Member) -> None:
+        object.__setattr__(_, "account", account)
+        object.__setattr__(_, "id", account.id)
+        _.name = account.name
+        _.nickname = account.nick
+        _.data = {}
 
 
-    def __setattr__(_, Name, Value):
-        if Name in ["Account", "ID"]:
-            raise AttributeError(f"Cannot modify Player.{Name}. These are determined by the user's Discord profile,\
+    def __setattr__(_, name, value):
+        if name in ["account", "id"]:
+            raise AttributeError(f"Cannot modify Player.{name}. These are determined by the user's Discord profile,\
                                  and are used by CordForge for various validations, and utilities.")
-        super().__setattr__(Name, Value)
-        if Name not in  ["Name", "Nickname", "Data"]:
-            _.Data.update({Name:Value})
+        super().__setattr__(name, value)
+        if name not in  ["name", "nickname", "data"]:
+            _.data.update({name:value})

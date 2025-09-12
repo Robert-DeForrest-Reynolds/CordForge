@@ -23,40 +23,40 @@ from .Data import Data
 
 class Cord(Bot):
     Message:DiscordMessage
-    def __init__(_, DashboardAlias:str, Entry:Callable, Autosave:bool=False) -> None:
-        _.DashboardAlias = DashboardAlias
-        _._Entry = Entry
-        _.Autosave = Autosave
-        _._Handle_Alias()
-        _.SourceDirectory = path[0]
-        _.InstanceUser:str = argv[1]
-        _.BaseViewFrame = None
-        _.EmbedFrame = None
-        _.Image = None
-        _.ImageComponents = []
-        _.ImageFile = None
-        _.ViewContent = []
-        _.EmbedContent = []
-        _.Message = None
-        _.DashboardBackground = GRAY
-        _.Height = 640
-        _.Width = 640
-        _.Font = CFFont(24)
-        _.Data = Data(_)
-        _.Players:dict[int:Player] = {}
+    def __init__(_, dashboard_alias:str, entry:Callable, autosave:bool=False) -> None:
+        _.dashboard_alias = dashboard_alias
+        _._entry = entry
+        _.autosave = autosave
+        _._handle_alias()
+        _.source_directory = path[0]
+        _.instance_user:str = argv[1]
+        _.base_view_frame = None
+        _.embed_frame = None
+        _.image = None
+        _.image_components = []
+        _.image_file = None
+        _.view_content = []
+        _.embed_content = []
+        _.message = None
+        _.dashboard_background = GRAY
+        _.height = 640
+        _.width = 640
+        _.font = CFFont(24)
+        _.data = Data(_)
+        _.players:dict[int:Player] = {}
         print("Discord Bot Initializing")
-        super().__init__(command_prefix=_.Prefix, intents=Intents.all())
+        super().__init__(command_prefix=_.prefix, intents=Intents.all())
 
 
     @property
-    def XCenter(_): return _.Width // 2
+    def x_center(_): return _.width // 2
     @property
-    def YCenter(_): return _.Height // 2
+    def y_center(_): return _.height // 2
     @property
-    def ImageCenter(_): return Vector2(_.XCenter, _.YCenter)
+    def image_center(_): return Vector2(_.x_center, _.y_center)
     
 
-    def Run(_, Task, *Arguments) -> Any:
+    def run_task(_, Task, *Arguments) -> Any:
         try:
             asyncio.get_running_loop()
         except RuntimeError:
@@ -65,224 +65,223 @@ class Cord(Bot):
                            "Run() is used for setup before the Bot runs it's loop.")
 
 
-    def _Handle_Alias(_) -> None:
-        _.Prefix = [_.DashboardAlias[0]]
-        for Prefix in _.Prefix.copy():
-            _.Prefix.extend([Variant for Variant in _._All_Case_Variants(Prefix, _.Prefix)\
-                                        if Variant not in _.Prefix])
-        _.DashboardAlias = [_.DashboardAlias[1:]]
-        for Alias in _.DashboardAlias.copy():
-            _.DashboardAlias.extend([Variant for Variant in _._All_Case_Variants(Alias, _.DashboardAlias)\
-                                        if Variant not in _.DashboardAlias])
+    def _handle_alias(_) -> None:
+        _.prefix = [_.dashboard_alias[0]]
+        for prefix in _.prefix.copy():
+            _.prefix.extend([variant for variant in _._all_case_variants(prefix, _.prefix)\
+                                        if variant not in _.prefix])
+        _.dashboard_alias = [_.dashboard_alias[1:]]
+        for alias in _.dashboard_alias.copy():
+            _.dashboard_alias.extend([variant for variant in _._all_case_variants(alias, _.dashboard_alias)\
+                                        if variant not in _.dashboard_alias])
 
 
-    def _All_Case_Variants(_, String: str, Originals:list[str]):
-        Pools = [(Character.lower(), Character.upper()) for Character in String]
-        Variants = []
-        for Variant in product(*Pools):
-            String = ''.join(Variant)
-            if String not in Originals: Variants.append(String)
-        return Variants
+    def _all_case_variants(_, string: str, originals:list[str]):
+        pools = [(character.lower(), character.upper()) for character in string]
+        variants = []
+        for variant in product(*pools):
+            string = ''.join(variant)
+            if string not in originals: variants.append(string)
+        return variants
 
 
-    def _Get_Token(_, Key:str) -> str:
-        with open(join(_.SourceDirectory, "Keys")) as KeyFile:
-            for Line in KeyFile:
-                LineData = Line.split("=")
-                if Key.lower() == LineData[0].lower():
-                    return LineData[1].strip()
+    def _get_token(_, key:str) -> str:
+        with open(join(_.source_directory, "Keys")) as key_file:
+            for line in key_file:
+                line_data = line.split("=")
+                if key.lower() == line_data[0].lower():
+                    return line_data[1].strip()
         return "Could Not Find Token"
 
 
     async def setup_hook(_):
-        async def Wrapper(Context): await _.Send_Dashboard_Command(Context)
-        _.add_command(Command(Wrapper, aliases=_.DashboardAlias))
+        async def wrapper(context): await _.send_dashboard_command(context)
+        _.add_command(Command(wrapper, aliases=_.dashboard_alias))
         await super().setup_hook()
 
 
     async def on_ready(_) -> None:
         print("Bot is alive.\n")
-        _.Guilds = _.guilds
-        await _.Data.Load_Data()
-        if _.Autosave:
-            await _.Data.Autosave()
+        await _.data.load_data()
+        if _.autosave:
+            await _.data.autosave()
 
 
-    def Start(_) -> None: _.run(_._Get_Token(_.InstanceUser))
+    def launch(_) -> None: _.run(_._get_token(_.instance_user))
 
 
-    def Load_Image(_, ImagePath:str) -> PillowImage:
-        return PillowImage.open(ImagePath)
+    def load_image(_, image_path:str) -> PillowImage:
+        return PillowImage.open(image_path)
 
 
-    async def New_Image(_) -> PillowImage:
-        _.Image = PillowImage.new("RGBA",
-                                  (_.Height, _.Width),
-                                  color=_.DashboardBackground)
-        return _.Image
+    async def new_image(_) -> PillowImage:
+        _.image = PillowImage.new("RGBA",
+                                  (_.height, _.width),
+                                  color=_.dashboard_background)
+        return _.image
 
 
-    async def Send_Image(_, Interaction:DiscordInteraction, ImagePath:str) -> None:
-        _.ImageFile = DiscordFile(ImagePath, filename="GameImage.png")
-        await _.Reply(Interaction)
+    async def send_image(_, interaction:DiscordInteraction, image_path:str) -> None:
+        _.image_file = DiscordFile(image_path, filename="GameImage.png")
+        await _.reply(interaction)
     
 
-    async def Save_Image(_, Path:str="CordImage") -> None:
-        if not hasattr(_, "Image") or _.Image is None:
+    async def save_image(_, path:str="CordImage") -> None:
+        if not hasattr(_, "image") or _.image is None:
             raise ValueError("No image found. Did you run Create_Image first?")
-        _.Image.save(Path + ".PNG", format="PNG")
+        _.image.save(path + ".PNG", format="PNG")
     
     
-    async def Buffer_Image(_) -> DiscordFile:
-        Buffer = BytesIO()
-        _.Image.save(Buffer, format="PNG")
-        Buffer.seek(0)
-        _.ImageFile = DiscordFile(Buffer, filename="GameImage.png")
-        Buffer.close()
-        return _.ImageFile
+    async def buffer_image(_) -> DiscordFile:
+        buffer = BytesIO()
+        _.image.save(buffer, format="PNG")
+        buffer.seek(0)
+        _.image_file = DiscordFile(buffer, filename="GameImage.png")
+        buffer.close()
+        return _.image_file
     
 
-    async def Container(_, X:int=0, Y:int=0, Parent:Component|None=None,
-                        Width:int|None=None, Height:int|None=None, 
-                        Background:Color=GRAY, Border:bool=False) -> Component:
+    async def container(_, x:int=0, y:int=0, parent:Component|None=None,
+                        width:int|None=None, height:int|None=None, 
+                        background:Color=GRAY, border:bool=False) -> Component:
         '''
         Create a Container Component\n
         A container's height and width is by default the parent container if given one, elsewise it's the Cord object that is it is created with.
         '''
-        NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent,
-                                 Width=Width, Height=Height,
-                                 Background=Background, Border=Border)
-        if Parent == None:
-            _.ImageComponents.append(NewContainer)
+        new_container = Container(cord=_, x=x, y=y, parent=parent,
+                                 width=width, height=height,
+                                 background=background, border=border)
+        if parent == None:
+            _.image_components.append(new_container)
         else:
-            Parent.Children.append(NewContainer)
-        return NewContainer
+            parent.Children.append(new_container)
+        return new_container
 
 
-    async def Line(_, X:int=0, Y:int=0, Parent:Component|None=None,
-                   Start:Vector2=Vector2(0,0), End:Vector2=Vector2(0,0),
-                   Color:Color=WHITE, FillWidth:int=1,
-                   Curve:bool=False) -> None:
-        NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent,
-                       Start=Start, End=End,
-                       FillWidth=FillWidth, Color=Color, Curve=Curve)
-        if Parent == None:
-            _.ImageComponents.append(NewLine)
+    async def line(_, x:int=0, y:int=0, parent:Component|None=None,
+                   start:Vector2=Vector2(0,0), end:Vector2=Vector2(0,0),
+                   color:Color=WHITE, fill_width:int=1,
+                   curve:bool=False) -> None:
+        new_line = Line(cord=_, x=x, y=y, parent=parent,
+                       start=start, end=end,
+                       fill_width=fill_width, color=color, curve=curve)
+        if parent == None:
+            _.image_components.append(new_line)
         else:
-            Parent.Children.append(NewLine)
-        return NewLine
+            parent.Children.append(new_line)
+        return new_line
 
 
-    async def List(_, X:int=0, Y:int=0, Parent:Component|None=None,
-                   Width:int|None=None, Height:int|None=None,
-                   Items:list[str:ListItem] = [], Font=None,
-                   Separation:int=4, Horizontal:bool=False,
-                   VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
-        NewList = List(Cord=_, X=X, Y=Y, Parent=Parent,
-                       Width=Width, Height=Height,
-                       Items=Items, Font=Font,
-                       Separation=Separation,
-                       Horizontal=Horizontal, VerticalCenter=VerticalCenter,
-                       HorizontalCenter=HorizontalCenter)
-        if Parent == None:
-            _.ImageComponents.append(NewList)
+    async def list(_, x:int=0, y:int=0, parent:Component|None=None,
+                   width:int|None=None, height:int|None=None,
+                   items:list[str:ListItem] = [], font=None,
+                   separation:int=4, horizontal:bool=False,
+                   vertical_center:bool=False, horizontal_center:bool=False) -> None:
+        new_list = List(cord=_, x=x, y=y, parent=parent,
+                       width=width, height=height,
+                       items=items, font=font,
+                       separation=separation,
+                       horizontal=horizontal, vertical_center=vertical_center,
+                       horizontal_center=horizontal_center)
+        if parent == None:
+            _.image_components.append(new_list)
         else:
-            Parent.Children.append(NewList)
-        return NewList
+            parent.Children.append(new_list)
+        return new_list
     
 
-    async def Text(_, Content, Position:list|Vector2|None=None, Parent:Component|None=None,
-                   Color:Color=WHITE, Background:Color=None, Font:CFFont=None,
-                   Center:bool=False) -> Component:
-        NewText = Text(Cord=_, Content=Content, Position=Position, Parent=Parent, Color=Color, Background=Background, Font=Font, Center=Center)
-        if Parent == None:
-            _.ImageComponents.append(NewText)
+    async def text(_, content, position:List|Vector2|None=None, parent:Component|None=None,
+                   color:Color=WHITE, background:Color=None, font:CFFont=None,
+                   center:bool=False) -> Component:
+        new_text = Text(cord=_, content=content, position=position, parent=parent, color=color, background=background, font=font, center=center)
+        if parent == None:
+            _.image_components.append(new_text)
         else:
-            Parent.Children.append(NewText)
-        return NewText
+            parent.Children.append(new_text)
+        return new_text
     
 
-    async def Sprite(_, X:int=0, Y:int=0, Parent:Component|None=None,
-                    SpriteImage:PillowImage=None, Path:str=None) -> None:
-        NewSprite = Sprite(Cord=_, X=X, Y=Y, Parent=Parent, SpriteImage=SpriteImage, Path=Path)
-        if Parent == None:
-            _.ImageComponents.append(NewSprite)
+    async def sprite(_, x:int=0, y:int=0, parent:Component|None=None,
+                    sprite_image:PillowImage=None, path:str=None) -> None:
+        new_sprite = Sprite(cord=_, x=x, y=y, parent=parent, sprite_image=sprite_image, path=path)
+        if parent == None:
+            _.image_components.append(new_sprite)
         else:
-            Parent.Children.append(NewSprite)
-        return NewSprite
+            parent.Children.append(new_sprite)
+        return new_sprite
 
 
-    async def Debug(_, VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
-        if VerticalCenter:
-            await _.Line(Start=Vector2(_.XCenter, 0), End=Vector2(_.XCenter, _.Height), Width=3, Color=DEBUG_COLOR)
-        if HorizontalCenter:
-            await _.Line(Start=Vector2(0, _.YCenter), End=Vector2(_.Width, _.YCenter), Width=3, Color=DEBUG_COLOR)
+    async def debug(_, vertical_center:bool=False, horizontal_center:bool=False) -> None:
+        if vertical_center:
+            await _.line(start=Vector2(_.x_center, 0), end=Vector2(_.x_center, _.height), fill_width=3, color=DEBUG_COLOR)
+        if horizontal_center:
+            await _.line(start=Vector2(0, _.y_center), end=Vector2(_.width, _.y_center), fill_width=3, color=DEBUG_COLOR)
 
 
-    async def Add_Button(_, Label:str, Callback:Callable, Arguments:list) -> None:
-        NewButton = Button(label=Label, style=ButtonStyle.grey)
-        NewButton.callback = lambda Interaction: Callback(Interaction, *Arguments)
-        _.ViewContent.append(NewButton)
+    async def add_button(_, label:str, callback:Callable, arguments:list) -> None:
+        new_button = Button(label=label, style=ButtonStyle.grey)
+        new_button.callback = lambda interaction: callback(interaction, *arguments)
+        _.view_content.append(new_button)
 
 
-    async def Construct_Components(_):
+    async def construct_components(_):
         print("Constructing Dashboard Components")
-        ImageComponent:Component
-        for ImageComponent in _.ImageComponents:
-            ComponentImage:PillowImage = await ImageComponent.Draw()
-            _.Image.paste(im=ComponentImage, box=(ImageComponent.X, ImageComponent.Y), mask=ComponentImage.split()[3])
-        _.ImageComponents = []
+        image_component:Component
+        for image_component in _.image_components:
+            component_image:PillowImage = await image_component.draw()
+            _.image.paste(im=component_image, box=(image_component.x, image_component.y), mask=component_image.split()[3])
+        _.image_components = []
 
 
-    async def Construct_View(_) -> None:
-        _.BaseViewFrame = View(timeout=144000)
-        if len(_.ViewContent) > 0:
-            for Content in _.ViewContent:
-                _.BaseViewFrame.add_item(Content)
-        _.ViewContent = []
+    async def construct_view(_) -> None:
+        _.base_view_frame = View(timeout=144000)
+        if len(_.view_content) > 0:
+            for content in _.view_content:
+                _.base_view_frame.add_item(content)
+        _.view_content = []
 
 
-    async def Reply(_, Interaction:DiscordInteraction) -> None:
-        _.BaseViewFrame = View(timeout=144000)
-        await _.Construct_View()
+    async def reply(_, interaction:DiscordInteraction) -> None:
+        _.base_view_frame = View(timeout=144000)
+        await _.construct_view()
 
-        if _.BaseViewFrame.total_children_count > 0 and _.Image == None:
-            await Interaction.response.edit_message(embed=_.EmbedFrame, view=_.BaseViewFrame)
-        elif _.Image != None:
-            await _.Construct_Components()
-            _.EmbedFrame = Embed(title="")
-            _.EmbedFrame.set_image(url="attachment://GameImage.png")
-            await _.Buffer_Image()
-            await Interaction.response.edit_message(embed=_.EmbedFrame, view=_.BaseViewFrame, attachments=[_.ImageFile])
-            _.ImageFile = None
+        if _.base_view_frame.total_children_count > 0 and _.image == None:
+            await interaction.response.edit_message(embed=_.embed_frame, view=_.base_view_frame)
+        elif _.image != None:
+            await _.construct_components()
+            _.embed_frame = Embed(title="")
+            _.embed_frame.set_image(url="attachment://GameImage.png")
+            await _.buffer_image()
+            await interaction.response.edit_message(embed=_.embed_frame, view=_.base_view_frame, attachments=[_.image_file])
+            _.image_file = None
         else:
             print("Your Reply has nothing on it.")
 
 
-    async def Send_Dashboard_Command(_, InitialContext:Context=None) -> None:
-        if InitialContext.author.id not in _.Players.keys(): _.Data.Initial_Cache(InitialContext.author)
+    async def send_dashboard_command(_, initial_context:Context=None) -> None:
+        if initial_context.author.id not in _.players.keys(): _.data.initial_cache(initial_context.author)
 
-        await InitialContext.message.delete()
+        await initial_context.message.delete()
         
-        if _.Message is not None: await _.Message.delete()
+        if _.message is not None: await _.message.delete()
         
-        User:Player = _.Players[InitialContext.author.id]
+        user:Player = _.players[initial_context.author.id]
         
         try:
-            await _._Entry(User)
-        except TypeError as E:
+            await _._entry(user)
+        except TypeError as e:
             print("Entry needs to accept `user` as an argument")
         
-        _.BaseViewFrame = View(timeout=144000)
-        await _.Construct_View()
+        _.base_view_frame = View(timeout=144000)
+        await _.construct_view()
         
-        if _.BaseViewFrame.total_children_count > 0 and _.Image == None:
-            _.Message = await InitialContext.send(embed=_.EmbedFrame, view=_.BaseViewFrame)
-        elif _.Image != None:
-            await _.Construct_Components()
-            _.EmbedFrame = Embed(title="")
-            _.EmbedFrame.set_image(url="attachment://GameImage.png")
-            await _.Buffer_Image()
-            _.Message = await InitialContext.send(embed=_.EmbedFrame, view=_.BaseViewFrame, file=_.ImageFile)
+        if _.base_view_frame.total_children_count > 0 and _.image == None:
+            _.message = await initial_context.send(embed=_.embed_frame, view=_.base_view_frame)
+        elif _.image != None:
+            await _.construct_components()
+            _.embed_frame = Embed(title="")
+            _.embed_frame.set_image(url="attachment://GameImage.png")
+            await _.buffer_image()
+            _.message = await initial_context.send(embed=_.embed_frame, view=_.base_view_frame, file=_.image_file)
         else:
             print("Your Dashboard has nothing on it.")

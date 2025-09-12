@@ -7,57 +7,57 @@ from decimal import Decimal, InvalidOperation
 from .Component import *
 from .ListItem import ListItem
 
-from ..Utilities import Format_Numeric
+from ..Utilities import format_numeric
 
 
 class List(Component):
-    def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
-                 Width:int|None, Height:int|None,
-                 Items:list[str], Font:Font, Separation:int,
-                 Horizontal:bool, VerticalCenter:bool, HorizontalCenter:bool) -> None:
-        super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height)
-        _.Font = Font if Font is not None else None
-        _.Font = _.Parent.Font if _.Parent else _.Cord.Font
-        _.Height = _.Cord.Height
-        _.Items = Items
-        _.Separation = Separation
-        _.Horizontal = Horizontal
-        _.VerticalCenter = VerticalCenter
-        _.HorizontalCenter = HorizontalCenter
+    def __init__(_, cord:Cord, x:int, y:int, parent:Component,
+                 width:int|None, height:int|None,
+                 items:list[str], font:Font, separation:int,
+                 horizontal:bool, vertical_center:bool, horizontal_center:bool) -> None:
+        super().__init__(cord=cord, x=x, y=y, parent=parent, width=width, height=height)
+        _.font = font if font is not None else None
+        _.font = _.parent.font if _.parent else _.cord.font
+        _.height = _.cord.height
+        _.items = items
+        _.separation = separation
+        _.horizontal = horizontal
+        _.vertical_center = vertical_center
+        _.horizontal_center = horizontal_center
 
 
-    async def Draw(_) -> PillowImage:
-        await super().Draw()
-        if _.Border:
-            _.Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
+    async def draw(_) -> PillowImage:
+        await super().draw()
+        if _.border:
+            _.drawing.rectangle([0, 0, _.width-1, _.height-1], outline=_.border_color, width=_.border_width)
             
-        TotalHeight = sum(max((Item.Font.Height if Item.Font else _.Font.Height),(Item.Image.height if Item.Image else 0)) + _.Separation for Item in _.Items)
-        if _.VerticalCenter:
-            Y = _.YCenter - (TotalHeight // 2) if _.VerticalCenter else _.Y
+        total_height = sum(max((item.font.height if item.font else _.font.height),(item.image.height if item.image else 0)) + _.separation for item in _.items)
+        if _.vertical_center:
+            y = _.x_center - (total_height // 2) if _.vertical_center else _.y
         else:
-            Y = (TotalHeight // 2) if _.VerticalCenter else _.Y
-        Ruler = 0
-        Item:ListItem
-        for Item in _.Items:
-            Font = Item.Font if Item.Font else _.Font
-            Numeric = None
-            try:Numeric = await Format_Numeric(float(Decimal(Item.Text.replace(",",""))))
+            y = (total_height // 2) if _.vertical_center else _.y
+        ruler = 0
+        item:ListItem
+        for item in _.items:
+            font = item.font if item.font else _.font
+            numeric = None
+            try:numeric = await format_numeric(float(Decimal(item.text.replace(",",""))))
             except InvalidOperation: pass
-            FontWidth = await _.Get_Text_Width(Numeric, Font=Font) if Numeric else await _.Get_Text_Width(Item.Text, Font=Font)
-            if Item.Image:
-                if _.HorizontalCenter:
-                    ImageX = _.XCenter - FontWidth//2 - Item.Image.width + Item.Separation
+            font_width = await _.get_text_width(numeric, Font=font) if numeric else await _.get_text_width(item.text, Font=font)
+            if item.image:
+                if _.horizontal_center:
+                    image_x = _.x_center - font_width//2 - item.image.width + item.separation
                 else:
-                    ImageX = FontWidth//2 - Item.Image.width + Item.Separation
-                ImageY = Y + Ruler
-                _.Image.paste(im=Item.Image, box=(ImageX, ImageY), mask=Item.Image)
-            if _.HorizontalCenter:
-                TextX = _.XCenter - FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
+                    image_x = font_width//2 - item.image.width + item.separation
+                image_y = y + ruler
+                _.image.paste(im=item.image, box=(image_x, image_y), mask=item.image)
+            if _.horizontal_center:
+                text_x = _.x_center - font_width//2 + ((item.image.width + item.separation)//2 if item.image else 0)
             else:
-                TextX = FontWidth//2 + ((Item.Image.width + Item.Separation)//2 if Item.Image else 0)
-            _.Drawing.text((TextX, Y + Ruler),
-                          Numeric if Numeric else Item.Text,
-                          font=Font.Font,
+                text_x = font_width//2 + ((item.image.width + item.separation)//2 if item.image else 0)
+            _.drawing.text((text_x, y + ruler),
+                          numeric if numeric else item.text,
+                          font=font.font,
                           fill=WHITE)
-            Ruler += Font.Height + _.Separation
-        return _.Image
+            ruler += font.height + _.separation
+        return _.image

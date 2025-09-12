@@ -9,38 +9,38 @@ from pathlib import Path
 
 class Launcher:
     def __init__(_):
-        _.Key = None
-        _.Commands = {"start": _.Start,
-                      "restart": _.Restart,
-                      "exit": _.Exit,
-                      "stop": _.Stop,
-                      "//": _.Emergency_Stop,
-                      "clear logs": _.Clear_Logs}
-        _.WorkingDirectory = getcwd()
+        _.key = None
+        _.commands = {"start": _.start,
+                      "restart": _.restart,
+                      "exit": _.exit,
+                      "stop": _.stop,
+                      "//": _.emergency_stop,
+                      "clear logs": _.clear_logs}
+        _.working_directory = getcwd()
         if len(argv) == 2:
-            _.KeySelection = argv[1]
+            _.key_selection = argv[1]
         else:
             print("No key chosen, finding first in Keys file.")
-            _.KeySelection = Path(join(_.WorkingDirectory, "Keys")).read_text().split("\n")[0].split("=")[0]
-        _.Settings = Path(join(_.WorkingDirectory, "Settings")).read_text().split("\n")
-        _.VirtualEnvironmentPath = Path(_.Settings[0].split("=")[1])
-        _.EntryPath = Path(_.Settings[1].split("=")[1])
-        _.CallCommand = f"{_.VirtualEnvironmentPath} -B {_.EntryPath} {_.KeySelection}"
+            _.key_selection = Path(join(_.working_directory, "Keys")).read_text().split("\n")[0].split("=")[0]
+        _.settings = Path(join(_.working_directory, "Settings")).read_text().split("\n")
+        _.virtual_environment_path = Path(_.settings[0].split("=")[1])
+        _.entry_path = Path(_.settings[1].split("=")[1])
+        _.call_command = f"{_.virtual_environment_path} -B {_.entry_path} {_.key_selection}"
         
-        _.User_Input()
+        _.user_input()
 
 
-    def User_Input(_):
+    def user_input(_):
         while True:
             admin_input = input()
             print("Input command: ", admin_input)
             try:
-                _.Commands[admin_input.lower()]()
+                _.commands[admin_input.lower()]()
             except KeyError:
                 print("Invalid command.")
     
 
-    def BotExists(_):
+    def bot_exists(_):
         try:
             Bot
         except NameError:
@@ -49,33 +49,33 @@ class Launcher:
             return True
 
 
-    def Start(_):
+    def start(_):
         global Bot
         print("Starting Cord")
-        Bot = Popen(_.CallCommand)
+        Bot = Popen(_.call_command)
 
 
-    def Restart(_):
+    def restart(_):
         global Bot
-        if _.BotExists():
+        if _.bot_exists():
             print("Discord bot stopped")
             Bot.kill()
-            Bot = Popen(_.CallCommand)
+            Bot = Popen(_.call_command)
             print("Discord bot restarted")
         else:
             print("There isn't a running bot")
 
-    def Exit(_):
+    def exit(_):
         global Bot
-        if _.BotExists() == False:
+        if _.bot_exists() == False:
             exit()
         else:
             print("There is a running bot")
 
 
-    def Stop(_):
+    def stop(_):
         global Bot
-        if _.BotExists():
+        if _.bot_exists():
             print("Discord bot stopped")
             Bot.kill()
             del Bot
@@ -83,22 +83,22 @@ class Launcher:
             print("There isn't a running bot")
 
 
-    def Emergency_Stop(_):
+    def emergency_stop(_):
         global Bot
-        if _.BotExists() == False:
+        if _.bot_exists() == False:
             print("Bot is not running it seems, stopping altogether though.")
             exit()
 
-        if _.BotExists():
+        if _.bot_exists():
             print("Discord bot stopped")
             Bot.kill()
             del Bot
             exit()
 
 
-    def Clear_Logs(_):
-        for File in glob("Source\\Logs\\*.log"):
+    def clear_logs(_):
+        for file in glob("Source\\Logs\\*.log"):
             try:
-                remove(File)
+                remove(file)
             except OSError:
                 print("Error removing log files for some reason")

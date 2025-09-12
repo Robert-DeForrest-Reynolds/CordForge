@@ -6,14 +6,14 @@ from .Component import *
 
 
 class Container(Component):
-    def __init__(_, Cord:Cord, X:int, Y:int, Parent:Component,
-                 Width:int, Height:int, Background:Color,
-                 Border:bool):
-        super().__init__(Cord=Cord, X=X, Y=Y, Width=Width, Height=Height, Parent=Parent, Background=Background, Border=Border)
+    def __init__(_, cord:Cord, x:int, y:int, parent:Component,
+                 width:int, height:int, background:Color,
+                 border:bool):
+        super().__init__(cord=cord, x=x, y=y, width=width, height=height, parent=parent, background=background, border=border)
 
 
-    async def Draw(_) -> PillowImage:
-        await super().Draw()
-        if _.Border:
-            _.Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
-        return _.Image
+    async def draw(_) -> PillowImage:
+        await super().draw()
+        if _.border:
+            _.drawing.rectangle([0, 0, _.width-1, _.height-1], outline=_.border_color, width=_.border_width)
+        return _.image

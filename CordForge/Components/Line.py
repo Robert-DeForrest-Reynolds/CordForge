@@ -6,19 +6,19 @@ from .Component import *
 
 
 class Line(Component):
-    def __init__(_, Cord:Cord, X, Y, Start:Vector2, End:Vector2, Parent:Component, FillWidth:int, Color:Color, Curve:bool):
-        super().__init__(Cord=Cord, X=X, Y=Y, Parent=Parent)
-        _.Start = Start
-        _.End = End
-        _.FillWidth = FillWidth
-        _.Color = Color
-        _.Curve = Curve
+    def __init__(_, cord:Cord, x, y, start:Vector2, end:Vector2, parent:Component, fill_width:int, color:Color, curve:bool):
+        super().__init__(cord=cord, x=x, y=y, parent=parent)
+        _.start = start
+        _.end = end
+        _.fill_width = fill_width
+        _.color = color
+        _.curve = curve
     
     
-    async def Draw(_) -> PillowImage:
-        super().Draw()
-        _.Drawing.line(xy=((_.Start.X, _.Start.Y), (_.End.X, _.End.Y)),
-                     fill=_.Color,
-                     width=_.FillWidth,
-                     joint="curve" if _.Curve else None)
-        return _.Image
+    async def draw(_) -> PillowImage:
+        super().draw()
+        _.drawing.line(xy=((_.start.x, _.start.y), (_.end.x, _.end.y)),
+                     fill=_.color,
+                     width=_.fill_width,
+                     joint="curve" if _.curve else None)
+        return _.image

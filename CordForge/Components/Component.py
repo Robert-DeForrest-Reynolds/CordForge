@@ -10,96 +10,96 @@ from ..Colors import *
 from ..Font import Font
 
 class Component:
-    Width:int
-    Height:int
-    X:int
-    Y:int
-    Background:Color
-    Color:Color
-    Border:bool
-    BorderColor:Color
-    BorderWidth:int
-    Parent:"Component"
-    Children:list["Component"]
-    Image:PillowImage
-    Font:Font
-    Drawing:ImageDraw
+    width:int
+    height:int
+    x:int
+    y:int
+    background:Color
+    color:Color
+    border:bool
+    border_color:Color
+    border_width:int
+    parent:"Component"
+    children:list["Component"]
+    image:PillowImage
+    font:Font
+    drawing:ImageDraw
 
 
-    def __init__(_, Cord:Cord=None, X:int=0, Y:int=0, Parent:"Component"=None,
-                 Width:int|None=0, Height:int|None=0,
-                 Color:Color=None,Background:Color=GRAY, Font:Font=None,
-                 Border:bool=False):
-        _.Cord = Cord
-        _.Parent = Parent
-        _.Color = Color
-        _.Background = Background
-        _.Border = Border
-        _.BorderColor = WHITE
-        _.BorderWidth = 1
-        _.Children = []
-        _.Font = Font if Font else (Parent.Font if Parent else _.Cord.Font)
-        _.X = X
-        _.Y = Y
-        _.Width = _.Cord.Width if Width is None else Width
-        _.Height = _.Cord.Height if Height is None else Height
-        _.ImageWidth = _.Cord.Width if not _.Parent else _.Parent.Width
-        _.ImageHeight = _.Cord.Height if not _.Parent else _.Parent.Height
-        _._Determine_Dimensions()
-        _.Path = _.Parent.Path + f".{_.__class__.__name__}" if Parent else _.__class__.__name__
-        _.Drawing = None
+    def __init__(_, cord:Cord=None, x:int=0, y:int=0, parent:"Component"=None,
+                 width:int|None=0, height:int|None=0,
+                 color:Color=None,background:Color=GRAY, font:Font=None,
+                 border:bool=False):
+        _.cord = cord
+        _.parent = parent
+        _.color = color
+        _.background = background
+        _.border = border
+        _.border_color = WHITE
+        _.border_width = 1
+        _.children = []
+        _.font = font if font else (parent.font if parent else _.cord.font)
+        _.x = x
+        _.y = y
+        _.width = _.cord.width if width is None else width
+        _.height = _.cord.height if height is None else height
+        _.image_width = _.cord.width if not _.parent else _.parent.width
+        _.image_height = _.cord.height if not _.parent else _.parent.height
+        _._determine_dimensions()
+        _.path = _.parent.path + f".{_.__class__.__name__}" if parent else _.__class__.__name__
+        _.drawing = None
 
 
     @property
-    def XCenter(_): return _.Width // 2
+    def x_center(_): return _.width // 2
     @property
-    def YCenter(_): return _.Height // 2
+    def y_center(_): return _.height // 2
     @property
-    def ImageCenter(_): return Vector2(_.XCenter, _.YCenter)
+    def image_center(_): return Vector2(_.x_center, _.y_center)
 
 
-    def __str__(_): return _.Path
+    def __str__(_): return _.path
 
 
-    def _Determine_Dimensions(_) -> None:
-        if _.Parent:
-            if _.Parent.Border:
-                _.X = _.Parent.X + _.X + _.Parent.BorderWidth
-                _.Y = _.Parent.Y + _.Y + _.Parent.BorderWidth
-                _.Width = _.Parent.Width - _.Parent.BorderWidth * 2
-                _.Height = _.Parent.Height - _.Parent.BorderWidth * 2
+    def _determine_dimensions(_) -> None:
+        if _.parent:
+            if _.parent.border:
+                _.x = _.parent.x + _.x + _.parent.border_width
+                _.y = _.parent.y + _.y + _.parent.border_width
+                _.width = _.parent.width - _.parent.border_width * 2
+                _.height = _.parent.height - _.parent.border_width * 2
             else:
-                _.X = _.X + _.Parent.X
-                _.Y = _.Y + _.Parent.Y
-                _.Width = _.Parent.Width
-                _.Height = _.Parent.Height
+                _.x = _.x + _.parent.x
+                _.y = _.y + _.parent.y
+                _.width = _.parent.width
+                _.height = _.parent.height
 
 
 
-    async def Debug(_, VerticalCenter:bool=False, HorizontalCenter:bool=False) -> None:
-        if VerticalCenter:
-            await _.Cord.Line(Parent=_, Start=Vector2(_.XCenter, 0), End=Vector2(_.XCenter, _.Height), Width=3, Color=DEBUG_COLOR)
-        if HorizontalCenter:
-            await _.Cord.Line(Parent=_, Start=Vector2(0, _.YCenter), End=Vector2(_.Width, _.YCenter), Width=3, Color=DEBUG_COLOR)
+    async def debug(_, vertical_center:bool=False, horizontal_center:bool=False) -> None:
+        if vertical_center:
+            await _.cord.Line(parent=_, start=Vector2(_.x_center, 0), end=Vector2(_.x_center, _.height), fill_width=3, color=DEBUG_COLOR)
+        if horizontal_center:
+            await _.cord.Line(parent=_, start=Vector2(0, _.y_center), end=Vector2(_.width, _.y_center), fill_width=3, color=DEBUG_COLOR)
 
 
-    async def Draw(_) -> None:
+    async def draw(_) -> None:
         print("Drawing Base")
-        _.Image = PillowImage.new("RGBA", (_.Width, _.Height), color=_.Background)
-        _.Drawing = ImageDraw.Draw(_.Image)
-        await _.Construct_Components()
+        _.image = PillowImage.new("RGBA", (_.width, _.height), color=_.background)
+        _.drawing = ImageDraw.Draw(_.image)
+        await _.construct_components()
 
 
-    async def Construct_Components(_):
+    async def construct_components(_):
         print(f"Constructing {_} Components")
-        Child:Component
-        for Child in _.Children:
-            ChildImage = await Child.Draw()
-            _.Image.paste(ChildImage, (Child.X, Child.Y), mask=ChildImage.split()[3])
+        child:Component
+        for child in _.children:
+            child_image = await child.draw()
+            _.image.paste(child_image, (child.x, child.y), mask=child_image.split()[3])
 
 
-    async def Get_Text_Width(_, Text:str, Font:Font=None) -> int:
-        TestFont:Font = Font if Font is not None else _.Cord.Font
-        MeasuringImage = PillowImage.new("RGBA", (10, 10))
-        Drawing = ImageDraw.Draw(MeasuringImage)
-        return int(Drawing.textlength(Text, font=TestFont.Font))
+    async def get_text_width(_, text:str, font:Font=None) -> int:
+        test_font:Font = font if font is not None else _.cord.font
+        measuring_image = PillowImage.new("RGBA", (10, 10))
+        drawing = ImageDraw.Draw(measuring_image)
+        return int(drawing.textlength(text, font=test_font.font))
