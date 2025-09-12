@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from Cord import Cord
-from .Component import *
+if TYPE_CHECKING: from cord import Cord
+from .component import *
 
 
 class Text(Component):
-    def __init__(_, cord:Cord, position:list|Vector2|None, parent:"Component",
+    def __init__(_, cord:Cord, position:list|Vector2|None, parent:Component,
                  content:str, color:Color, background:Color,
                  font:Font, center:bool):
         super().__init__(cord=cord, parent=parent, width=None, height=None, color=color, font=font, background=background)
@@ -19,12 +19,12 @@ class Text(Component):
         _.font = font if font is not None else _.cord.font
 
 
-    async def draw(_) -> PillowImage:
+    async def draw(_) -> Image:
         super().draw()
         if _.center:
             _.content_width = await _.get_text_width(_.content)
             if _.position != None:
-                raise("Text Component cannot be given a position, and be centered.")
+                raise("Text component cannot be given a position, and be centered.")
             _.position = Vector2()
             if _.parent:
                 _.position.x = _.parent.width//2 - _.content_width//2

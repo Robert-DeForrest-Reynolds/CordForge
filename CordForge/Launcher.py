@@ -58,9 +58,9 @@ class Launcher:
     def restart(_):
         global Bot
         if _.bot_exists():
-            print("Discord bot stopped")
+            print("Restarting Discord bot")
             Bot.kill()
-            Bot = Popen(_.call_command)
+            _.start()
             print("Discord bot restarted")
         else:
             print("There isn't a running bot")

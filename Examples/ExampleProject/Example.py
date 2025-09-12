@@ -9,13 +9,13 @@ async def Entry() -> None:
 async def Report(Interaction) -> None:
     await Example.Add_Button(Label="Example Button", Callback=Report, Arguments=[])
     await Example.New_Image()
-    LeftHand:Container = await Example.Container(Width=Example.XCenter, Height=Example.Height)
+    LeftHand:Panel = await Example.Container(Width=Example.XCenter, Height=Example.Height)
     LeftHand.Border = True
-    await Example.List(Parent=LeftHand,
-                   Items=[ListItem(Text="Health"),
-                          ListItem(Text="Level"),],
+    await Example.display(Parent=LeftHand,
+                   Items=[DisplayItem(Text="Health"),
+                          DisplayItem(Text="Level"),],
                    VerticalCenter=True)
-    await Example.Reply(Interaction)
+    await Example.reply(Interaction)
 
 
 Example = Cord("Example", Entry)

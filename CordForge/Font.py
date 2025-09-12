@@ -7,11 +7,5 @@ class Font:
             _.font = ImageFont.truetype(font_path, size)
         else:
             _.font = ImageFont.load_default(_.size)
-        print(_)
         _.ascent, _.descent = _.font.getmetrics()
         _.height = _.ascent + _.descent
-
-
-    # def __getattr__(_, Name):
-    #     # Delegate any unknown attributes/methods to the internal ImageFont
-    #     return getattr(_.Font, Name)

@@ -1,19 +1,19 @@
 class Color(tuple):
     __slots__ = []
-    def __new__(Class,R,G,B,A=255):
-        return super().__new__(Class,[R,G,B,A])
+    def __new__(Class,r,g,b,a=255):
+        return super().__new__(Class,[r,g,b,a])
 
     @property
-    def R(_): return _[0]
+    def r(_): return _[0]
     @property
-    def G(_): return _[1]
+    def g(_): return _[1]
     @property
-    def B(_): return _[2]
+    def b(_): return _[2]
     @property
-    def A(_):return _[3]
+    def a(_):return _[3]
 
     def __repr__(_):
-        return f"Color({_.R},{_.G},{_.B},{_.A})"
+        return f"Color({_.r},{_.g},{_.b},{_.a})"
 
 
 WHITE = Color(255,255,255,255)

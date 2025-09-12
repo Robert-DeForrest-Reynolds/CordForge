@@ -1,16 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from Cord import Cord
+if TYPE_CHECKING: from cord import Cord
 
 from decimal import Decimal, InvalidOperation
 
-from .Component import *
-from .ListItem import ListItem
+from .component import *
+from .display_item import DisplayItem
 
-from ..Utilities import format_numeric
+from ..utilities import format_numeric
 
 
-class List(Component):
+class Display(Component):
     def __init__(_, cord:Cord, x:int, y:int, parent:Component,
                  width:int|None, height:int|None,
                  items:list[str], font:Font, separation:int,
@@ -26,7 +26,7 @@ class List(Component):
         _.horizontal_center = horizontal_center
 
 
-    async def draw(_) -> PillowImage:
+    async def draw(_) -> Image:
         await super().draw()
         if _.border:
             _.drawing.rectangle([0, 0, _.width-1, _.height-1], outline=_.border_color, width=_.border_width)
@@ -37,7 +37,7 @@ class List(Component):
         else:
             y = (total_height // 2) if _.vertical_center else _.y
         ruler = 0
-        item:ListItem
+        item:DisplayItem
         for item in _.items:
             font = item.font if item.font else _.font
             numeric = None

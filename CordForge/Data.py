@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from Cord import Cord
+if TYPE_CHECKING: from .cord import Cord
 
 from asyncio import sleep
 from os.path import exists, join
 from os import mkdir, listdir, remove
 
 from discord import Member
-from .Player import Player
+from .player import Player
 
 PlayersDirectory = join("Data", "Players")
 

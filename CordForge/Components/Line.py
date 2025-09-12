@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from Cord import Cord
+if TYPE_CHECKING: from cord import Cord
 
-from .Component import *
+from .component import *
 
 
 class Line(Component):
@@ -15,7 +15,7 @@ class Line(Component):
         _.curve = curve
     
     
-    async def draw(_) -> PillowImage:
+    async def draw(_) -> Image:
         super().draw()
         _.drawing.line(xy=((_.start.x, _.start.y), (_.end.x, _.end.y)),
                      fill=_.color,

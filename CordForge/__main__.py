@@ -1,4 +1,4 @@
-from CordForge.Launcher import Launcher
+from CordForge.launcher import Launcher
 
 def run():
     print("Launching Launcher")
