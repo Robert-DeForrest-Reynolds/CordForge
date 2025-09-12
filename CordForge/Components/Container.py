@@ -13,9 +13,7 @@ class Container(Component):
 
 
     async def Draw(_) -> PillowImage:
-        _.Image = PillowImage.new("RGBA", (_.Width, _.Height), color=_.Background)
-        await _.Construct_Components()
+        await super().Draw()
         if _.Border:
-            Drawing = ImageDraw.Draw(_.Image)
-            Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
+            _.Drawing.rectangle([0, 0, _.Width-1, _.Height-1], outline=_.BorderColor, width=_.BorderWidth)
         return _.Image

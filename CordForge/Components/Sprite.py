@@ -15,7 +15,7 @@ class Sprite(Component):
             _.SpriteImage = PillowImage.open(Path)
 
 
-    async def Draw(_):
+    async def Draw(_) -> PillowImage:
         _.Image = PillowImage.new("RGBA", (_.Width, _.Height), color=_.Background)
         _.Image.paste(im=_.SpriteImage, box=(_.X, _.Y), mask=_.SpriteImage.split()[3])
         return _.Image

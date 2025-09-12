@@ -16,9 +16,8 @@ class Line(Component):
     
     
     async def Draw(_) -> PillowImage:
-        _.Image = PillowImage.new("RGBA", (_.ImageWidth, _.ImageHeight), color=TRANSPRENCY)
-        Drawing = ImageDraw.Draw(_.Image)
-        Drawing.line(xy=((_.Start.X, _.Start.Y), (_.End.X, _.End.Y)),
+        super().Draw()
+        _.Drawing.line(xy=((_.Start.X, _.Start.Y), (_.End.X, _.End.Y)),
                      fill=_.Color,
                      width=_.FillWidth,
                      joint="curve" if _.Curve else None)

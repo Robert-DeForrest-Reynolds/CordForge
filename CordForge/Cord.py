@@ -62,7 +62,7 @@ class Cord(Bot):
         except RuntimeError:
             return asyncio.run(Task(*Arguments))
         raise RuntimeError("There is an existing loop.\n" \
-                        "Await() is used for setup before the Bot runs it's loop.")
+                           "Run() is used for setup before the Bot runs it's loop.")
 
 
     def _Handle_Alias(_) -> None:
@@ -115,10 +115,11 @@ class Cord(Bot):
         return PillowImage.open(ImagePath)
 
 
-    async def New_Image(_) -> None:
+    async def New_Image(_) -> PillowImage:
         _.Image = PillowImage.new("RGBA",
                                   (_.Height, _.Width),
                                   color=_.DashboardBackground)
+        return _.Image
 
 
     async def Send_Image(_, Interaction:DiscordInteraction, ImagePath:str) -> None:
@@ -141,10 +142,16 @@ class Cord(Bot):
         return _.ImageFile
     
 
-    async def Container(_, X:int=0, Y:int=0, Parent=None,
+    async def Container(_, X:int=0, Y:int=0, Parent:Component|None=None,
                         Width:int|None=None, Height:int|None=None, 
                         Background:Color=GRAY, Border:bool=False) -> Component:
-        NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent, Width=Width, Height=Height, Background=Background, Border=Border)
+        '''
+        Create a Container Component\n
+        A container's height and width is by default the parent container if given one, elsewise it's the Cord object that is it is created with.
+        '''
+        NewContainer = Container(Cord=_, X=X, Y=Y, Parent=Parent,
+                                 Width=Width, Height=Height,
+                                 Background=Background, Border=Border)
         if Parent == None:
             _.ImageComponents.append(NewContainer)
         else:
@@ -152,11 +159,13 @@ class Cord(Bot):
         return NewContainer
 
 
-    async def Line(_, X:int=0, Y:int=0, Parent:Component=None,
+    async def Line(_, X:int=0, Y:int=0, Parent:Component|None=None,
                    Start:Vector2=Vector2(0,0), End:Vector2=Vector2(0,0),
                    Color:Color=WHITE, FillWidth:int=1,
                    Curve:bool=False) -> None:
-        NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent, Start=Start, End=End, FillWidth=FillWidth, Color=Color, Curve=Curve)
+        NewLine = Line(Cord=_, X=X, Y=Y, Parent=Parent,
+                       Start=Start, End=End,
+                       FillWidth=FillWidth, Color=Color, Curve=Curve)
         if Parent == None:
             _.ImageComponents.append(NewLine)
         else:
@@ -164,7 +173,7 @@ class Cord(Bot):
         return NewLine
 
 
-    async def List(_, X:int=0, Y:int=0, Parent:Component=None,
+    async def List(_, X:int=0, Y:int=0, Parent:Component|None=None,
                    Width:int|None=None, Height:int|None=None,
                    Items:list[str:ListItem] = [], Font=None,
                    Separation:int=4, Horizontal:bool=False,
@@ -182,10 +191,10 @@ class Cord(Bot):
         return NewList
     
 
-    async def Text(_, Content, Position:list|Vector2|None=None, Parent:Component=None,
+    async def Text(_, Content, Position:list|Vector2|None=None, Parent:Component|None=None,
                    Color:Color=WHITE, Background:Color=None, Font:CFFont=None,
                    Center:bool=False) -> Component:
-        NewText = Text(Cord=_, Position=Position, Parent=Parent, Content=Content, Color=Color, Background=Background, Font=Font, Center=Center)
+        NewText = Text(Cord=_, Content=Content, Position=Position, Parent=Parent, Color=Color, Background=Background, Font=Font, Center=Center)
         if Parent == None:
             _.ImageComponents.append(NewText)
         else:
@@ -193,7 +202,7 @@ class Cord(Bot):
         return NewText
     
 
-    async def Sprite(_, X:int=0, Y:int=0, Parent:Component=None,
+    async def Sprite(_, X:int=0, Y:int=0, Parent:Component|None=None,
                     SpriteImage:PillowImage=None, Path:str=None) -> None:
         NewSprite = Sprite(Cord=_, X=X, Y=Y, Parent=Parent, SpriteImage=SpriteImage, Path=Path)
         if Parent == None:
@@ -236,6 +245,7 @@ class Cord(Bot):
     async def Reply(_, Interaction:DiscordInteraction) -> None:
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()
+
         if _.BaseViewFrame.total_children_count > 0 and _.Image == None:
             await Interaction.response.edit_message(embed=_.EmbedFrame, view=_.BaseViewFrame)
         elif _.Image != None:
@@ -251,15 +261,21 @@ class Cord(Bot):
 
     async def Send_Dashboard_Command(_, InitialContext:Context=None) -> None:
         if InitialContext.author.id not in _.Players.keys(): _.Data.Initial_Cache(InitialContext.author)
+
         await InitialContext.message.delete()
+        
         if _.Message is not None: await _.Message.delete()
+        
         User:Player = _.Players[InitialContext.author.id]
+        
         try:
             await _._Entry(User)
         except TypeError as E:
             print("Entry needs to accept `user` as an argument")
+        
         _.BaseViewFrame = View(timeout=144000)
         await _.Construct_View()
+        
         if _.BaseViewFrame.total_children_count > 0 and _.Image == None:
             _.Message = await InitialContext.send(embed=_.EmbedFrame, view=_.BaseViewFrame)
         elif _.Image != None:
