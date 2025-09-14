@@ -38,21 +38,26 @@ dev_name=OTk3MDA...
 ### Basic Bot Setup
 `bot.py`
 ```python
-from CordForge import Cord
+from CordForge import *
 
-async def main_menu():
-    """Your main dashboard function"""
-    await Bot.New_Image()
-    await Bot.Add_Button("Click Me!", button_callback, [])
-    # Add more UI elements here
 
-async def button_callback(interaction):
-    """Handle button clicks"""
-    await Bot.Reply(interaction)
+# Initial send of dashboard, all other functions are replys/edits of the sent message
+async def entry(user_card:Card) -> Card:
+    await user_card.new_image()
+    panel = await user_card.panel(border=True)
+    await user_card.text("Hello", Vector2(5, 5), parent=panel)
+    await user_card.add_button("Some other thing", some_other_card, [])
 
-# Create and start your bot
-Bot = Cord("mybot", main_menu)
-Bot.Start()
+
+async def some_other_card(user_card:Card, interaction) -> None:
+    await user_card.new_image()
+    await user_card.add_button("Home", roc.home, [])
+    await roc.reply(user_card, interaction)
+
+
+roc = Cord("roc", entry)
+# any necessary setup, loading images into memory, data management, etc.
+roc.launch()
 ```
 
 ### Launch Bot
