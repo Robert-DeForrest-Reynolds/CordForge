@@ -66,16 +66,6 @@ roc.launch()
 cordforge bot.py dev_name
 ```
 
-### Next Steps
-
-Now that you have a basic bot running, here are some ideas to expand it:
-
-1. **Add more screens** - Create different sections for your bot
-2. **Use containers** - Organize your UI with containers and borders
-3. **Add images** - Use ListItem with images for richer content
-4. **Create games** - Build simple games like tic-tac-toe or number guessing
-5. **Add persistence** - Save user data to files or databases
-
 
 ### Version Control
 Ensure your `Keys` file is hidden, here is a recommend .gitignore for example:
