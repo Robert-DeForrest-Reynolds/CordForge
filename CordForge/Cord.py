@@ -21,8 +21,8 @@ from .data import Data
 
 class Cord(Bot):
     Message:Message
-    def __init__(_, dashboard_alias:str, entry:Callable, autosave:bool=False) -> None:
-        _.dashboard_alias = dashboard_alias
+    def __init__(_, entry_command:str, entry:Callable, autosave:bool=False) -> None:
+        _.entry_command = entry_command
         _._entry = entry
         _.autosave = autosave
         _._handle_alias()
@@ -38,14 +38,14 @@ class Cord(Bot):
 
 
     def _handle_alias(_) -> None:
-        _.prefix = [_.dashboard_alias[0]]
+        _.prefix = [_.entry_command[0]]
         for prefix in _.prefix.copy():
             _.prefix.extend([variant for variant in _._all_case_variants(prefix, _.prefix)\
                                         if variant not in _.prefix])
-        _.dashboard_alias = [_.dashboard_alias[1:]]
-        for alias in _.dashboard_alias.copy():
-            _.dashboard_alias.extend([variant for variant in _._all_case_variants(alias, _.dashboard_alias)\
-                                        if variant not in _.dashboard_alias])
+        _.entry_command = [_.entry_command[1:]]
+        for alias in _.entry_command.copy():
+            _.entry_command.extend([variant for variant in _._all_case_variants(alias, _.entry_command)\
+                                        if variant not in _.entry_command])
 
 
     def _all_case_variants(_, string: str, originals:list[str]):
@@ -69,7 +69,7 @@ class Cord(Bot):
     async def setup_hook(_):
         # Setup entry() command
         async def wrapper(initial_context): await _.send_initial_card(initial_context)
-        _.add_command(Command(wrapper, aliases=_.dashboard_alias))
+        _.add_command(Command(wrapper, aliases=_.entry_command))
         
         await super().setup_hook()
 
