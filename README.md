@@ -67,12 +67,44 @@ bot.launch()
 ```
 
 ### Launch & Use Bot
-`cordforge bot_file.py token-key`
 ```bash
-cordforge bot.py dev_name
+cordforge dev_name
 ```
 
 Type `cmd` into the Discord server where Bot is a member.
+
+Use `stop` to stop the bot completely.
+Use `restart` to restart the Discord bot, implementing any changes in scripts.
+Use `exit` to exit the launcher. The launcher will not let you exit with a running bot.
+
+### Player Data & Persistence
+A players profile is created, and saved as soon as they use their first panel. You can add traits to their `Player` object, and they will automatically be saved and reloaded.
+
+```python
+from CordForge import *
+
+
+# Initial send of dashboard, all other functions are replys/edits of the sent message
+async def entry(user_card:Card) -> Card:
+    await user_card.add_button(f"Money: {user_card.user.wallet}", give_money, [])
+
+
+async def give_money(user_card:Card, interaction) -> None:
+    user_card.user.wallet += 1
+    await bot.home(user_card, interaction)
+
+
+player_traits = [
+    # [trait name, trait value]
+    ["wallet", 0.00],
+]
+bot = Cord(entry_command="cmd",
+           entry=entry,
+           player_traits=player_traits,
+           autosave=True)
+bot.data.autosave_interval = 3
+bot.launch()
+```
 
 
 ### Version Control Recommendation

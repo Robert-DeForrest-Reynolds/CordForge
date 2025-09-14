@@ -21,7 +21,7 @@ from .data import Data
 
 class Cord(Bot):
     Message:Message
-    def __init__(_, entry_command:str, entry:Callable, autosave:bool=False) -> None:
+    def __init__(_, entry_command:str, entry:Callable, player_traits:list[list[str, Any]], autosave:bool=False) -> None:
         _.entry_command = entry_command
         _._entry = entry
         _.autosave = autosave
@@ -30,9 +30,11 @@ class Cord(Bot):
         _.instance_user:str = argv[1]
         _.user_dashboards:dict[str:Panel] = {}
         _.data = Data(_)
+        _.player_traits = player_traits
         _.players:dict[int:Player] = {}
         _.message:Message = None
         print("Discord Bot Initializing")
+        _._setup_player_traits()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
         
 
@@ -64,6 +66,11 @@ class Cord(Bot):
                 if key.lower() == line_data[0].lower():
                     return line_data[1].strip()
         return "Could Not Find Token"
+    
+
+    def _setup_player_traits(_) -> None:
+        for [trait, value] in _.player_traits:
+            Player.add_player_trait(trait, value)
 
 
     async def setup_hook(_):

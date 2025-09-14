@@ -14,13 +14,16 @@ PlayersDirectory = join("Data", "Players")
 class Data:
     cord:Cord
     autosave_interval:int
-    def __init__(_, cord:Cord):
+    def __init__(_, cord:Cord, autosave:bool=False):
         object.__setattr__(_, "cord", cord)
         _.autosave_interval = 15
         if not exists("Data"):
             mkdir("Data")
         if not exists(PlayersDirectory):
             mkdir(PlayersDirectory)
+        
+        if autosave:
+            _.autosave()
 
 
     def __setattr__(_, name, value):
@@ -76,6 +79,10 @@ class Data:
                     _.cord.players.update({id:user})
                     for line in contents:
                         name, value = line.split("=")
+                        if value.replace(".", "").isdecimal():
+                            value = float(value)
+                        elif value.isdecimal():
+                            value = int(value)
                         user.__setattr__(name, value)
                     print(f"Loaded {member.name}'s Data")
 
