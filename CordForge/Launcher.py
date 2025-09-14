@@ -21,8 +21,8 @@ class Launcher:
             _.key_selection = argv[1]
         else:
             print("No key chosen, finding first in Keys file.")
-            _.key_selection = Path(join(_.working_directory, "Keys")).read_text().split("\n")[0].split("=")[0]
-        _.settings = Path(join(_.working_directory, "Settings")).read_text().split("\n")
+            _.key_selection = Path(join(_.working_directory, "keys")).read_text().split("\n")[0].split("=")[0]
+        _.settings = Path(join(_.working_directory, "settings")).read_text().split("\n")
         _.virtual_environment_path = Path(_.settings[0].split("=")[1])
         _.entry_path = Path(_.settings[1].split("=")[1])
         _.call_command = f"{_.virtual_environment_path} -B {_.entry_path} {_.key_selection}"

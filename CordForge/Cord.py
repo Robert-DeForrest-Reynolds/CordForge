@@ -58,7 +58,7 @@ class Cord(Bot):
 
 
     def _get_token(_, key:str) -> str:
-        with open(join(_.source_directory, "Keys")) as key_file:
+        with open(join(_.source_directory, "keys")) as key_file:
             for line in key_file:
                 line_data = line.split("=")
                 if key.lower() == line_data[0].lower():

@@ -5,6 +5,8 @@ env
 .pypirc
 CordForge.egg-info
 
+DREADME.md
+
 /Data
 /dist
 /BuildEnv

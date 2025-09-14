@@ -29,10 +29,16 @@ pip install -e .
 First, create a Discord application and bot at [Discord Developer Portal](https://discord.com/developers/applications).
 
 ### Set Up Your Project
-Create a `Keys` file in your project directory:
+Create a `keys` file in your project directory:
 `key_name~your_discord_bot_token_here`
 ```
 dev_name=OTk3MDA...
+```
+
+Create a `settings` file in your project directory
+```
+Env=.venv/Scripts/python
+Entry=bot.py
 ```
 
 ### Basic Bot Setup
@@ -77,7 +83,3 @@ __pycache__
 Keys
 Data
 ```
-
-# Getting Help
-- Look at the [Examples](EXAMPLES.md) for more complex use cases.
-- Review the [API Reference](API_REFERENCE.md) for all available functionality.
