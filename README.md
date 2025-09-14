@@ -86,26 +86,6 @@ Keys
 Data
 ```
 
-# Troubleshooting
-
-### Bot doesn't respond
-- Check that your bot token is correct in the `Keys` file
-- Make sure your bot is invited to the server with proper permissions
-- Verify the bot is online (check the console output)
-
-### Images don't appear
-- Always call `await Bot.New_Image()` before adding components
-- Make sure to call `await Bot.Reply(interaction)` to send the interface
-
-### Buttons don't work
-- Ensure your callback functions accept an `interaction` parameter
-- Check that you're calling `await Bot.Reply(interaction)` in your callbacks
-
-### Common Errors
-- **"No image found"**: Call `await Bot.New_Image()` first
-- **"Token not found"**: Check your `Keys` file format
-- **"Invalid command"**: Make sure your bot prefix matches what you type
-
 # Getting Help
 - Look at the [Examples](EXAMPLES.md) for more complex use cases.
 - Review the [API Reference](API_REFERENCE.md) for all available functionality.
