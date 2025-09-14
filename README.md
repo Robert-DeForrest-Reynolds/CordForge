@@ -60,14 +60,16 @@ bot = Cord(entry_command="cmd", entry=entry)
 bot.launch()
 ```
 
-### Launch Bot
+### Launch & Use Bot
 `cordforge bot_file.py token-key`
 ```bash
 cordforge bot.py dev_name
 ```
 
+Type `cmd` into the Discord server where Bot is a member.
 
-### Version Control
+
+### Version Control Recommendation
 Ensure your `Keys` file is hidden, here is a recommend .gitignore for example:
 ```
 __pycache__
