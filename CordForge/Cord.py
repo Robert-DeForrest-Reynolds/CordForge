@@ -94,27 +94,6 @@ class Cord(Bot):
         _.run(_._get_token(_.instance_user))
 
 
-    async def home(_, user_card:Card, interaction:Interaction) -> None:
-        try:
-            await _._entry(user_card)
-        except Exception as e:
-            print(f"Exception: {e}")
-
-        await user_card.construct()
-        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
-            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
-                                                                        view=user_card.view_frame)
-        elif user_card.image != None:
-            user_card.embed_frame = Embed(title="")
-            user_card.embed_frame.set_image(url="attachment://GameImage.png")
-            await user_card.buffer_image()
-            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
-                                                                        view=user_card.view_frame,
-                                                                        attachments=[user_card.image_file])
-        else:
-            print("Your Dashboard has nothing on it.")
-
-
     async def new_card(_, user:Member, initial_context:Context) -> Card:
         '''
         Create new card to draw on.
@@ -128,19 +107,6 @@ class Cord(Bot):
     def load_image(_, image_path:str) -> Image:
         'Load image from file path into memory'
         return Image.open(image_path)
-
-
-    async def reply(_, user_card:Card, interaction:Interaction) -> None:
-        await user_card.construct()
-        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
-            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame)
-        elif user_card.image != None:
-            user_card.embed_frame = Embed(title="")
-            user_card.embed_frame.set_image(url="attachment://GameImage.png")
-            await user_card.buffer_image()
-            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame, attachments=[user_card.image_file])
-        else:
-            print("Your Dashboard has nothing on it.")
 
 
     async def send_initial_card(_, initial_context:Context) -> None:
@@ -166,5 +132,42 @@ class Cord(Bot):
             user_card.embed_frame.set_image(url="attachment://GameImage.png")
             await user_card.buffer_image()
             user_card.message = await initial_context.send(embed=user_card.embed_frame, view=user_card.view_frame, file=user_card.image_file)
+        else:
+            print("Your Dashboard has nothing on it.")
+
+
+    async def reply(_, user_card:Card, interaction:Interaction) -> None:
+        await user_card.construct()
+        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame)
+        elif user_card.image != None:
+            user_card.embed_frame = Embed(title="")
+            user_card.embed_frame.set_image(url="attachment://GameImage.png")
+            await user_card.buffer_image()
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame, attachments=[user_card.image_file])
+        else:
+            print("Your Dashboard has nothing on it.")
+
+
+    async def home(_, user_card:Card, interaction:Interaction) -> None:
+        '''
+        Brings the user back to the entry() function card
+        '''
+        try:
+            await _._entry(user_card)
+        except Exception as e:
+            print(f"Exception: {e}")
+
+        await user_card.construct()
+        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
+                                                                        view=user_card.view_frame)
+        elif user_card.image != None:
+            user_card.embed_frame = Embed(title="")
+            user_card.embed_frame.set_image(url="attachment://GameImage.png")
+            await user_card.buffer_image()
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
+                                                                        view=user_card.view_frame,
+                                                                        attachments=[user_card.image_file])
         else:
             print("Your Dashboard has nothing on it.")

@@ -16,7 +16,7 @@ class Line(Component):
     
     
     async def draw(_) -> Image:
-        super().draw()
+        await super().draw()
         _.drawing.line(xy=((_.start.x, _.start.y), (_.end.x, _.end.y)),
                      fill=_.color,
                      width=_.fill_width,

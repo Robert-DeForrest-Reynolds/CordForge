@@ -20,7 +20,7 @@ class Text(Component):
 
 
     async def draw(_) -> Image:
-        super().draw()
+        await super().draw()
         if _.center:
             _.content_width = await _.get_text_width(_.content)
             if _.position != None:

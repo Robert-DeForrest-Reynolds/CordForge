@@ -93,7 +93,7 @@ class Card:
         _.view_content.append(new_button)
     
 
-    async def container(_, x:int=0, y:int=0, parent:Component|None=None,
+    async def panel(_, x:int=0, y:int=0, parent:Component|None=None,
                         width:int|None=None, height:int|None=None, 
                         background:Color=GRAY, border:bool=False) -> Component:
         '''
