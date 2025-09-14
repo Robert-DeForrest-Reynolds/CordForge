@@ -10,10 +10,10 @@ from .components import *
 from .colors import *
 from .vector2 import Vector2
 from .font import Font
-from .player import Player
+from .user import User
 
 class Card:
-    def __init__(_, user:Player, use:Context|Interaction) -> None:
+    def __init__(_, user:User, use:Context|Interaction) -> None:
         _.user = user
         _.view_frame:View = None
         _.embed_frame:Embed = None

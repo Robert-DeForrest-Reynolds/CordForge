@@ -2,7 +2,7 @@ from discord import Member
 from typing import Any
 
 
-class Player:
+class User:
     account:Member
     name:str
     nickname:str
@@ -15,7 +15,7 @@ class Player:
         _.nickname = account.nick
         _.data = {}
 
-        for key, value in Player.__dict__.items():
+        for key, value in User.__dict__.items():
             if not key.startswith("__") and key not in ["account", "id", "name", "nickname", "data", "add_player_trait"]:
                 _.data[key] = value
 
@@ -32,6 +32,6 @@ class Player:
 
     @staticmethod
     def add_player_trait(trait_name:str, value:Any) -> None:    
-        if not hasattr(Player, trait_name):
+        if not hasattr(User, trait_name):
             print(f"Adding trait {trait_name}")
-            setattr(Player, trait_name, value)
+            setattr(User, trait_name, value)

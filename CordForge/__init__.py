@@ -9,4 +9,4 @@ from .colors import *
 from .font import Font
 from .components import *
 from .utilities import *
-from .player import Player
+from .user import User

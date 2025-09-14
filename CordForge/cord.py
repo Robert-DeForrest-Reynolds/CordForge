@@ -15,13 +15,13 @@ from .card import Card
 from .colors import *
 from .font import Font as CFFont
 from .vector2 import Vector2
-from .player import Player
+from .user import User
 from .data import Data
 
 
 class Cord(Bot):
     Message:Message
-    def __init__(_, entry_command:str, entry:Callable, player_traits:list[list[str, Any]]=[], autosave:bool=False) -> None:
+    def __init__(_, entry_command:str, entry:Callable, user_traits:list[list[str, Any]]=[], autosave:bool=False) -> None:
         _.entry_command = entry_command
         _._entry = entry
         _.autosave = autosave
@@ -30,11 +30,11 @@ class Cord(Bot):
         _.instance_user:str = argv[1]
         _.user_dashboards:dict[str:Panel] = {}
         _.data = Data(_)
-        _.player_traits = player_traits
-        _.players:dict[int:Player] = {}
+        _.user_traits = user_traits
+        _.user_profiles = {}
         _.message:Message = None
         print("Discord Bot Initializing")
-        _._setup_player_traits()
+        _._setup_user_traits()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
         
 
@@ -68,9 +68,9 @@ class Cord(Bot):
         return "Could Not Find Token"
     
 
-    def _setup_player_traits(_) -> None:
-        for [trait, value] in _.player_traits:
-            Player.add_player_trait(trait, value)
+    def _setup_user_traits(_) -> None:
+        for [trait, value] in _.user_traits:
+            User.add_user_trait(trait, value)
 
 
     async def setup_hook(_):
@@ -118,13 +118,14 @@ class Cord(Bot):
 
 
     async def send_initial_card(_, initial_context:Context) -> None:
-        if initial_context.author.id not in _.players.keys(): _.data.initial_cache(initial_context.author)
+        user:User = User(initial_context.author)
+        if user.id not in _.user_profiles.keys():
+            _.user_profiles.update({user.id:user})
 
         await initial_context.message.delete()
         
         if _.message is not None: await _.message.delete()
 
-        user:Player = _.players[initial_context.author.id]
         user_card:Card = await _.new_card(user, initial_context)
 
         try:

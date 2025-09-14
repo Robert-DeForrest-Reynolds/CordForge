@@ -7,9 +7,9 @@ from os.path import exists, join
 from os import mkdir, listdir, remove
 
 from discord import Member
-from .player import Player
+from .user import User
 
-PlayersDirectory = join("Data", "Players")
+usersDirectory = join("Data", "users")
 
 class Data:
     cord:Cord
@@ -19,8 +19,8 @@ class Data:
         _.autosave_interval = 15
         if not exists("Data"):
             mkdir("Data")
-        if not exists(PlayersDirectory):
-            mkdir(PlayersDirectory)
+        if not exists(usersDirectory):
+            mkdir(usersDirectory)
         
         if autosave:
             _.autosave()
@@ -36,17 +36,13 @@ class Data:
             raise AttributeError(f"Data attributes can only be dictonaries")
 
 
-    def initial_cache(_, user:Member) -> None:
-        _.cord.players.update({user.id:Player(user)})
-
-
     async def autosave(_) -> None:
         while True:
             await sleep(_.autosave_interval)
             print("Autosaving")
-            user:Player
-            for user in _.cord.players.values():
-                with open(join(PlayersDirectory, f"{user.id}.cf"), "w") as file:
+            user:User
+            for user in _.cord.users.values():
+                with open(join(usersDirectory, f"{user.id}.cf"), "w") as file:
                     data_string = ""
                     for name, value in user.data.items():
                         data_string += f"{name}={value}\n"
@@ -67,16 +63,16 @@ class Data:
 
     async def load_data(_) -> None:
         print("Loading data")
-        for file in listdir(PlayersDirectory):
+        for file in listdir(usersDirectory):
             id = int(file[:-3])
-            with open(join(PlayersDirectory, file), 'r') as file:
+            with open(join(usersDirectory, file), 'r') as file:
                 contents = [line.strip() for line in file.readlines() if line != ""]
                 for guild in _.cord.guilds:
                     member = guild.get_member(id)
                 
                 if member:
-                    user = Player(member)
-                    _.cord.players.update({id:user})
+                    user = User(member)
+                    _.cord.users.update({id:user})
                     for line in contents:
                         name, value = line.split("=")
                         if value.replace(".", "").isdecimal():
@@ -87,10 +83,10 @@ class Data:
                     print(f"Loaded {member.name}'s Data")
 
 
-    async def reset_user(_, user:Player) -> None:
-        player_file_path = join(PlayersDirectory, f"{user.id}.cf")
-        if exists(player_file_path):
-            remove(player_file_path)
+    async def reset_user(_, user:User) -> None:
+        user_file_path = join(usersDirectory, f"{user.id}.cf")
+        if exists(user_file_path):
+            remove(user_file_path)
             print("Reset User")
         else:
             print("Tried to reset a user's file that did not exist.")

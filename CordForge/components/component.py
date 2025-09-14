@@ -69,14 +69,14 @@ class Component:
 
 
     async def draw(_) -> None:
-        print(f"Drawing Base of {_.__str__}")
+        # print(f"Drawing Base of {_.__str__}")
         _.image = Image.new("RGBA", (_.width, _.height), color=_.background)
         _.drawing = ImageDraw.Draw(_.image)
         await _.construct_components()
 
 
     async def construct_components(_) -> None:
-        print(f"Constructing {_}'s Components")
+        # print(f"Constructing {_}'s Components")
         child:Component
         for child in _.children:
             child_image = await child.draw()
