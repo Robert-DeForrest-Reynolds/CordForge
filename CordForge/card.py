@@ -57,6 +57,15 @@ class Card:
             for content in _.view_content:
                 _.view_frame.add_item(content)
         _.view_content = []
+    
+    
+    async def _buffer_image(_) -> DiscordFile:
+        buffer = BytesIO()
+        _.image.save(buffer, format="PNG")
+        buffer.seek(0)
+        _.image_file = DiscordFile(buffer, filename="GameImage.png")
+        buffer.close()
+        return _.image_file
 
 
     async def new_image(_) -> Image:
@@ -76,15 +85,6 @@ class Card:
         if not hasattr(_, "image") or _.image is None:
             raise ValueError("No image found. Did you run Create_Image first?")
         _.image.save(path + ".PNG", format="PNG")
-    
-    
-    async def buffer_image(_) -> DiscordFile:
-        buffer = BytesIO()
-        _.image.save(buffer, format="PNG")
-        buffer.seek(0)
-        _.image_file = DiscordFile(buffer, filename="GameImage.png")
-        buffer.close()
-        return _.image_file
 
 
     async def add_button(_, label:str, callback:Callable, arguments:list) -> None:
