@@ -76,6 +76,7 @@ Type `cmd` into the Discord server where Bot is a member.
 Use `stop` to stop the bot completely.
 Use `restart` to restart the Discord bot, implementing any changes in scripts.
 Use `exit` to exit the launcher. The launcher will not let you exit with a running bot.
+Use `//` to emergency stop the bot. Easy to type in cases of wild loops, or other problems.
 
 ### Player Data & Persistence
 A players profile is created, and saved as soon as they use their first panel. You can add traits to their `Player` object, and they will automatically be saved and reloaded.

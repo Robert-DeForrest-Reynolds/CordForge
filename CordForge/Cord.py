@@ -21,7 +21,7 @@ from .data import Data
 
 class Cord(Bot):
     Message:Message
-    def __init__(_, entry_command:str, entry:Callable, player_traits:list[list[str, Any]], autosave:bool=False) -> None:
+    def __init__(_, entry_command:str, entry:Callable, player_traits:list[list[str, Any]]=[], autosave:bool=False) -> None:
         _.entry_command = entry_command
         _._entry = entry
         _.autosave = autosave
