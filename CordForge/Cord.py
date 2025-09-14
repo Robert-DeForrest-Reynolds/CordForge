@@ -11,7 +11,7 @@ import asyncio
 from typing import Callable, Any
 
 from .components import *
-from card import Card
+from .card import Card
 from .colors import *
 from .font import Font as CFFont
 from .vector2 import Vector2
@@ -34,15 +34,6 @@ class Cord(Bot):
         _.message:Message = None
         print("Discord Bot Initializing")
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
-    
-
-    def run_task(_, Task, *Arguments) -> Any:
-        try:
-            asyncio.get_running_loop()
-        except RuntimeError:
-            return asyncio.run(Task(*Arguments))
-        raise RuntimeError("There is an existing loop.\n" \
-                           "Run() is used for setup before the Bot runs it's loop.")
 
 
     def _handle_alias(_) -> None:
@@ -75,8 +66,10 @@ class Cord(Bot):
 
 
     async def setup_hook(_):
-        async def wrapper(context): await _.send_dashboard_command(context)
+        # Setup entry() command
+        async def wrapper(initial_context): await _.send_initial_card(initial_context)
         _.add_command(Command(wrapper, aliases=_.dashboard_alias))
+        
         await super().setup_hook()
 
 
@@ -85,6 +78,15 @@ class Cord(Bot):
         await _.data.load_data()
         if _.autosave:
             await _.data.autosave()
+    
+
+    def run_task(_, Task, *Arguments) -> Any:
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(Task(*Arguments))
+        raise RuntimeError("There is an existing loop.\n" \
+                           "Run() is used for setup before the Bot runs it's loop.")
 
 
     def launch(_) -> None:
@@ -92,29 +94,56 @@ class Cord(Bot):
         _.run(_._get_token(_.instance_user))
 
 
-    async def new_card(_, user:Member, initial_context:Context) -> Card:
-        user_card:Card = Card()
-        player:Player = _.players[initial_context.author.id]
+    async def home(_, user_card:Card, interaction:Interaction) -> None:
+        try:
+            await _._entry(user_card)
+        except Exception as e:
+            print(f"Exception: {e}")
 
-
-    async def reply(_, interaction:Interaction) -> None:
-        _.base_view_frame = View(timeout=144000)
-        await _._construct_view()
-
-        if _.base_view_frame.total_children_count > 0 and _.image == None:
-            await interaction.response.edit_message(embed=_.embed_frame, view=_.base_view_frame)
-        elif _.image != None:
-            await _._construct_components()
-            _.embed_frame = Embed(title="")
-            _.embed_frame.set_image(url="attachment://GameImage.png")
-            await _.buffer_image()
-            await interaction.response.edit_message(embed=_.embed_frame, view=_.base_view_frame, attachments=[_.image_file])
-            _.image_file = None
+        await user_card.construct()
+        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
+                                                                        view=user_card.view_frame)
+        elif user_card.image != None:
+            user_card.embed_frame = Embed(title="")
+            user_card.embed_frame.set_image(url="attachment://GameImage.png")
+            await user_card.buffer_image()
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
+                                                                        view=user_card.view_frame,
+                                                                        attachments=[user_card.image_file])
         else:
-            print("Your Reply has nothing on it.")
+            print("Your Dashboard has nothing on it.")
 
 
-    async def send_dashboard_command(_, initial_context:Context=None) -> None:
+    async def new_card(_, user:Member, initial_context:Context) -> Card:
+        '''
+        Create new card to draw on.
+
+        Returns instantiated Card
+        '''
+        user_card:Card = Card(user, initial_context)
+        return user_card
+
+
+    def load_image(_, image_path:str) -> Image:
+        'Load image from file path into memory'
+        return Image.open(image_path)
+
+
+    async def reply(_, user_card:Card, interaction:Interaction) -> None:
+        await user_card.construct()
+        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame)
+        elif user_card.image != None:
+            user_card.embed_frame = Embed(title="")
+            user_card.embed_frame.set_image(url="attachment://GameImage.png")
+            await user_card.buffer_image()
+            user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame, view=user_card.view_frame, attachments=[user_card.image_file])
+        else:
+            print("Your Dashboard has nothing on it.")
+
+
+    async def send_initial_card(_, initial_context:Context) -> None:
         if initial_context.author.id not in _.players.keys(): _.data.initial_cache(initial_context.author)
 
         await initial_context.message.delete()
@@ -122,22 +151,20 @@ class Cord(Bot):
         if _.message is not None: await _.message.delete()
 
         user:Player = _.players[initial_context.author.id]
-        
+        user_card:Card = await _.new_card(user, initial_context)
+
         try:
-            await _._entry(user)
-        except TypeError as e:
-            print("Entry needs to accept `user` as an argument")
-        
-        _.base_view_frame = View(timeout=144000)
-        await _._construct_view()
-        
-        if _.base_view_frame.total_children_count > 0 and _.image == None:
-            _.message = await initial_context.send(embed=_.embed_frame, view=_.base_view_frame)
-        elif _.image != None:
-            await _._construct_components()
-            _.embed_frame = Embed(title="")
-            _.embed_frame.set_image(url="attachment://GameImage.png")
-            await _.buffer_image()
-            _.message = await initial_context.send(embed=_.embed_frame, view=_.base_view_frame, file=_.image_file)
+            await _._entry(user_card)
+        except Exception as e:
+            print(f"Exception: {e}")
+
+        await user_card.construct()
+        if user_card.view_frame.total_children_count > 0 and user_card.image == None:
+            user_card.message = await initial_context.send(embed=user_card.embed_frame, view=user_card.view_frame)
+        elif user_card.image != None:
+            user_card.embed_frame = Embed(title="")
+            user_card.embed_frame.set_image(url="attachment://GameImage.png")
+            await user_card.buffer_image()
+            user_card.message = await initial_context.send(embed=user_card.embed_frame, view=user_card.view_frame, file=user_card.image_file)
         else:
             print("Your Dashboard has nothing on it.")

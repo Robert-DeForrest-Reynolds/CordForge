@@ -1,31 +1,32 @@
 from discord import File as DiscordFile
 from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message
 from discord.ui import Button, View
+from discord.ext.commands import Context
 from PIL import Image
 from io import BytesIO
 from typing import Callable, Any
 
 from .components import *
-from colors import *
-from vector2 import Vector2
-from font import Font
-from player import Player
+from .colors import *
+from .vector2 import Vector2
+from .font import Font
+from .player import Player
 
 class Card:
-    def __init__(_, user:Player, initial_call) -> None:
-        _.base_view_frame = None
-        _.embed_frame = None
+    def __init__(_, user:Player, use:Context|Interaction) -> None:
+        _.user = user
+        _.view_frame:View = None
+        _.embed_frame:Embed = None
         _.image:Image = None
         _.image_components:list[Component] = []
         _.image_file:DiscordFile = None
         _.view_content = []
         _.embed_content = []
-
         _.dashboard_background = GRAY
-
         _.height = 640
         _.width = 640
         _.font = Font(24)
+        _.message:Message = None
 
 
     @property
@@ -34,6 +35,12 @@ class Card:
     def y_center(_): return _.height // 2
     @property
     def image_center(_): return Vector2(_.x_center, _.y_center)
+
+
+    async def construct(_) -> "Card":
+        await _._construct_view()
+        await _._construct_components()
+        return _
 
 
     async def _construct_components(_):
@@ -45,24 +52,19 @@ class Card:
 
 
     async def _construct_view(_) -> None:
-        _.base_view_frame = View(timeout=144000)
+        _.view_frame = View(timeout=144000)
         if len(_.view_content) > 0:
             for content in _.view_content:
-                _.base_view_frame.add_item(content)
+                _.view_frame.add_item(content)
         _.view_content = []
-
-
-    def load_image(_, image_path:str) -> Image:
-        'Load image from file path'
-        return Image.open(image_path)
 
 
     async def new_image(_) -> Image:
         'Create new image'
-        new_image = Image.new("RGBA",
+        _.image = Image.new("RGBA",
                                     (_.height, _.width),
                                     color=_.dashboard_background)
-        return new_image
+        return _.image
 
 
     async def send_image(_, interaction:Interaction, image_path:str) -> None:
@@ -87,7 +89,7 @@ class Card:
 
     async def add_button(_, label:str, callback:Callable, arguments:list) -> None:
         new_button = Button(label=label, style=ButtonStyle.grey)
-        new_button.callback = lambda interaction: callback(interaction, *arguments)
+        new_button.callback = lambda interaction: callback(_, interaction, *arguments)
         _.view_content.append(new_button)
     
 
@@ -141,7 +143,7 @@ class Card:
     
 
     async def text(_, content, position:list[int,int]|Vector2|None=None, parent:Component|None=None,
-                   color:Color=WHITE, background:Color=None, font:CFFont=None,
+                   color:Color=WHITE, background:Color=None, font:Font=None,
                    center:bool=False) -> Component:
         new_text = Text(cord=_, content=content, position=position, parent=parent, color=color, background=background, font=font, center=center)
         if parent == None:
