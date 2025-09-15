@@ -60,7 +60,6 @@ class Component:
                 _.height = _.parent.height
 
 
-
     async def debug(_, vertical_center:bool=False, horizontal_center:bool=False) -> None:
         if vertical_center:
             await _.cord.line(parent=_, start=Vector2(_.x_center, 0), end=Vector2(_.x_center, _.height), fill_width=3, color=DEBUG_COLOR)

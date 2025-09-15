@@ -1,6 +1,6 @@
-Discord Bot Library - UI & Image Manipulation, Bot Management, Easy Data Persistence, and more for Making Games
+Discord Bot Library - A set of tools for bot management, image manipulation, easy data persistence, and more for making Games and bots
 
-Essentially just a wrapper over discord.py and Pillow to make life a little easier for image-based, and gameplay focused Discord bots.
+Essentially just a wrapper over discord.py and Pillow, with a lot of extra fluff to make life a lot easier for image-based, and gameplay focused Discord bots.
 Provides:
  - Image creation with a UI system, and sprite management
  - Out-of-the-box persistent data management for players with extensibility to handle anything
@@ -13,9 +13,12 @@ Provides:
 
 
 # Installation
+Requires Python 3.13+
 
 ### Installing CordForge
 ```bash
+py -m venv .venv
+<activate venv>
 pip install cordforge
 ```
 
@@ -23,6 +26,8 @@ Or install from source:
 ```bash
 git clone https://github.com/Robert-DeForrest-Reynolds/CordForge
 cd CordForge
+py -m venv .venv
+<activate venv>
 pip install -e .
 ```
 
@@ -106,6 +111,12 @@ bot = Cord(entry_command="cmd",
 bot.launch()
 ```
 
+### More Information
+Cord inherits from discord.py's `Bot` class, so you could add commands, cogs, and whatnot as you might normally.
+The `Card` class `_.image` is a pillow image, and you can use all of it's variables, and functions.
+Anything that CordForge can't do, can easily be implemented alongside it.
+
+[Discord channel for any help](https://discord.gg/GGt4wZpujH)
 
 ### Version Control Recommendation
 Ensure your `Keys` file is hidden, here is a recommend .gitignore for example:
