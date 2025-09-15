@@ -102,9 +102,7 @@ player_traits = [
 ]
 bot = Cord(entry_command="cmd",
            entry=entry,
-           player_traits=player_traits,
-           autosave=True)
-bot.data.autosave_interval = 3
+           player_traits=player_traits)
 bot.launch()
 ```
 

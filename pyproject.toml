@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 cordforge = "CordForge.__main__:run"
+cf = "CordForge.__main__:run"
 
 [project.urls]
 Homepage = "https://github.com/Robert-DeForrest-Reynolds/CordForge"

@@ -31,7 +31,7 @@ class User:
 
 
     @staticmethod
-    def add_player_trait(trait_name:str, value:Any) -> None:    
+    def add_trait(trait_name:str, value:Any) -> None:    
         if not hasattr(User, trait_name):
             print(f"Adding trait {trait_name}")
             setattr(User, trait_name, value)

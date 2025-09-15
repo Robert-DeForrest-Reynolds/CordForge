@@ -21,7 +21,7 @@ from .data import Data
 
 class Cord(Bot):
     Message:Message
-    def __init__(_, entry_command:str, entry:Callable, user_traits:list[list[str, Any]]=[], autosave:bool=False) -> None:
+    def __init__(_, entry_command:str, entry:Callable, user_traits:list[list[str, Any]]=[], autosave:bool=True) -> None:
         _.entry_command = entry_command
         _._entry = entry
         _.autosave = autosave
@@ -70,54 +70,10 @@ class Cord(Bot):
 
     def _setup_user_traits(_) -> None:
         for [trait, value] in _.user_traits:
-            User.add_user_trait(trait, value)
+            User.add_trait(trait, value)
 
 
-    async def setup_hook(_):
-        # Setup entry() command
-        async def wrapper(initial_context): await _.send_initial_card(initial_context)
-        _.add_command(Command(wrapper, aliases=_.entry_command))
-        
-        await super().setup_hook()
-
-
-    async def on_ready(_) -> None:
-        print("Bot is alive.\n")
-        await _.data.load_data()
-        if _.autosave:
-            await _.data.autosave()
-    
-
-    def run_task(_, Task, *Arguments) -> Any:
-        try:
-            asyncio.get_running_loop()
-        except RuntimeError:
-            return asyncio.run(Task(*Arguments))
-        raise RuntimeError("There is an existing loop.\n" \
-                           "Run() is used for setup before the Bot runs it's loop.")
-
-
-    def launch(_) -> None:
-        'Start Discord Bot'
-        _.run(_._get_token(_.instance_user))
-
-
-    async def new_card(_, user:Member, initial_context:Context) -> Card:
-        '''
-        Create new card to draw on.
-
-        Returns instantiated Card
-        '''
-        user_card:Card = Card(user, initial_context)
-        return user_card
-
-
-    def load_image(_, image_path:str) -> Image:
-        'Load image from file path into memory'
-        return Image.open(image_path)
-
-
-    async def send_initial_card(_, initial_context:Context) -> None:
+    async def _send_initial_card(_, initial_context:Context) -> None:
         user:User = User(initial_context.author)
         if user.id not in _.user_profiles.keys():
             _.user_profiles.update({user.id:user})
@@ -146,6 +102,44 @@ class Cord(Bot):
                                                            file=user_card.image_file)
         else:
             print("Dashboard has nothing on it.")
+
+
+    async def setup_hook(_):
+        async def wrapper(initial_context): await _._send_initial_card(initial_context)
+        _.add_command(Command(wrapper, aliases=_.entry_command))
+        await super().setup_hook()
+
+
+    async def on_ready(_) -> None:
+        print("Bot is alive.\n")
+        await _.data.load_data()
+        if _.autosave: await _.data.autosave()
+    
+
+    def run_task(_, Task, *Arguments) -> Any:
+        try: asyncio.get_running_loop()
+        except RuntimeError: return asyncio.run(Task(*Arguments))
+        raise RuntimeError("There is an existing loop. Run() is only used for setup before the Bot runs it's loop.")
+
+
+    def launch(_) -> None:
+        'Start Discord Bot'
+        _.run(_._get_token(_.instance_user))
+
+
+    async def new_card(_, user:Member, initial_context:Context) -> Card:
+        '''
+        Create new card to draw on.
+
+        Returns instantiated Card
+        '''
+        user_card:Card = Card(user, initial_context)
+        return user_card
+
+
+    def load_image(_, image_path:str) -> Image:
+        'Load image from file path into memory'
+        return Image.open(image_path)
 
 
     async def reply(_, user_card:Card, interaction:Interaction) -> None:
