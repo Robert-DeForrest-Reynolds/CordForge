@@ -1,14 +1,12 @@
-from subprocess import run
-import sys
-from os import cpu_count, getcwd, environ
-
+import subprocess, sys, os, zipfile
+from urllib.request import urlretrieve
 
 if sys.platform.startswith("win"):
-    print("Windows Installation")
+    print("Windows installation unsupported")
 elif sys.platform.startswith("linux"):
     print("Linux Installation")
-    run(["sudo", "apt", "update"])
-    run([
+    subprocess.run(["sudo", "apt", "update"])
+    subprocess.run([
         "sudo", "apt", "install", "-y",
         "build-essential", "libssl-dev", "zlib1g-dev",
         "libncurses5-dev", "libncursesw5-dev", "libreadline-dev",
@@ -16,20 +14,19 @@ elif sys.platform.startswith("linux"):
         "libbz2-dev", "libexpat1-dev", "liblzma-dev",
         "tk-dev", "uuid-dev", "libffi-dev", "wget"
     ])
-    run(["wget", "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tgz"])
-    run(["mkdir", "-p", "install"])
-    run(["tar", "-xf", "Python-3.13.7.tgz", "-C", "install", "--strip-components=1"])
-    run(["./configure", f"--prefix={getcwd()}/py", "--enable-optimizations"], cwd="install")
-    jobs = cpu_count() or 2  # fallback to 2 if detection fails
-    run(["make", "-s", f"-j{jobs}"], cwd="install")
-    run(["rm", "-r", "Python-3.13.7.tgz"])
-    run(["make", "install"], cwd="install")
-    run(["sudo", "rm", "-r", "install"])
-    env = environ.copy()
+    subprocess.run(["wget", "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tgz"])
+    subprocess.run(["mkdir", "-p", "install"])
+    subprocess.run(["tar", "-xf", "Python-3.13.7.tgz", "-C", "install", "--strip-components=1"])
+    subprocess.run(["./configure", f"--prefix={os.getcwd()}/py", "--enable-optimizations"], cwd="install")
+    jobs = os.cpu_count() or 2  # fallback to 2 if detection fails
+    subprocess.run(["make", "-s", f"-j{jobs}"], cwd="install")
+    subprocess.run(["rm", "-r", "Python-3.13.7.tgz"])
+    subprocess.run(["make", "install"], cwd="install")
+    subprocess.run(["sudo", "rm", "-r", "install"])
+    env = os.environ.copy()
     env["PYTHONNOUSERSITE"] = "1"
-    run(["py/bin/python3", "-m", "pip", "install", "e", "."], env=env)
-    run(["sudo", "rm", "-r", "build"])
-    run(["sudo", "rm", "-r", "CordForge.egg-info"])
-
+    subprocess.run(["py/bin/python3", "-m", "pip", "install", "e", "."], env=env)
+    subprocess.run(["sudo", "rm", "-r", "build"])
+    subprocess.run(["sudo", "rm", "-r", "CordForge.egg-info"])
 elif sys.platform.startswith("darwin"):
-    print("macOS Installation")
+    print("macOS installation unsupported")

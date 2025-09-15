@@ -12,7 +12,7 @@ DREADME.md
 /Python*
 /Data
 /dist
-/BuildEnv
+/BuildVenv
 /Package.py
 /TODO
 /TestVenv
