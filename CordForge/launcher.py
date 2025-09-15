@@ -1,4 +1,4 @@
-from sys import exit
+from sys import exit, platform
 from os import remove, getcwd
 from os.path import join
 from subprocess import *
@@ -25,7 +25,10 @@ class Launcher:
         _.settings = Path(join(_.working_directory, "settings")).read_text().split("\n")
         _.virtual_environment_path = Path(_.settings[0].split("=")[1])
         _.entry_path = Path(_.settings[1].split("=")[1])
-        _.call_command = f"{_.virtual_environment_path} -B {_.entry_path} {_.key_selection}"
+        if platform.startswith("win"):
+            _.call_command = f"{_.virtual_environment_path} -B {_.entry_path} {_.key_selection}"
+        elif platform.startswith("linux"):
+            _.call_command = [_.virtual_environment_path, "-B", _.entry_path, _.key_selection]
         
         _.user_input()
 

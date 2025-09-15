@@ -7,6 +7,9 @@ CordForge.egg-info
 
 DREADME.md
 
+/py
+/install
+/Python*
 /Data
 /dist
 /BuildEnv
@@ -14,6 +17,9 @@ DREADME.md
 /TODO
 /TestVenv
 /Test.py
+/test.py
+/keys
+/settings
 /Keys
 /Settings
 /Test.bat
