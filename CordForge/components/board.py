@@ -5,12 +5,12 @@ if TYPE_CHECKING: from cord import Cord
 from decimal import Decimal, InvalidOperation
 
 from .component import *
-from .display_item import DisplayItem
+from .board_item import BoardItem
 
 from ..utilities import format_numeric
 
 
-class Display(Component):
+class Board(Component):
     def __init__(_, cord:Cord, x:int, y:int, parent:Component,
                  width:int|None, height:int|None,
                  items:list[str], font:Font, separation:int,
@@ -36,7 +36,7 @@ class Display(Component):
         else:
             y = (total_height // 2) if _.vertical_center else _.y
         ruler = 0
-        item:DisplayItem
+        item:BoardItem
         for item in _.items:
             font = item.font if item.font is not None else _.font
             numeric = None

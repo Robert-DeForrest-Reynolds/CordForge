@@ -1,10 +1,7 @@
 # Currently
- - Load necessary profiles so that user can have a development bot and server, and a official bot and server(s)
-the profiles will need to hold:
- - servers
- - channels
-
- - profiles will be decided using the chosen key
+ - generating stubs upon saving, or giving launcher a command
+as long as the launcher is running, is should be able to detect any file changes, and then generate new stubs. should only do this when the bot isn't running
+there needs to be a command to use just-in-case
 
 # Components to Implements:
  - VerticalContainer

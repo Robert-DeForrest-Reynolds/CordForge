@@ -116,12 +116,12 @@ class Card:
         return new_line
 
 
-    async def display(_, x:int=0, y:int=0, parent:Component|None=None,
+    async def board(_, x:int=0, y:int=0, parent:Component|None=None,
                    width:int|None=None, height:int|None=None,
-                   items:list[str:display_item] = [], font=None,
+                   items:list[str:board_item] = [], font=None,
                    separation:int=4, horizontal:bool=False,
                    vertical_center:bool=False, horizontal_center:bool=False) -> None:
-        new_display = Display(cord=_, x=x, y=y, parent=parent,
+        new_display = Board(cord=_, x=x, y=y, parent=parent,
                        width=width, height=height,
                        items=items, font=font,
                        separation=separation,
