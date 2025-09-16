@@ -19,9 +19,18 @@ from .user import User
 from .data import Data
 from .font import Font
 
+import logging
 
 class Cord(Bot):
-    def __init__(_, entry_command:str=None, autosave:bool=True) -> None:
+    def __init__(_, entry_command: str = None, autosave: bool = True) -> None:
+        super().__init__(command_prefix=_.prefix, intents=Intents.all())
+        _.logger = logging.getLogger("CordForge")
+        _.logger.setLevel(logging.DEBUG)  # or INFO
+        if not _.logger.hasHandlers():
+            handler = logging.StreamHandler()  # default to stdout
+            formatter = logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+            handler.setFormatter(formatter)
+            _.logger.addHandler(handler)
         _.entry_command = entry_command
         _.entry:Callable = None
         _.setup:Callable = None
@@ -95,7 +104,7 @@ class Cord(Bot):
 
 
     def launch(_, entry:Callable, setup:Callable=None) -> None:
-        print("Launching...")
+        _.logger.info("Launching...")
         'Start Discord Bot'
         _.entry = entry
         _.setup = setup
@@ -109,11 +118,11 @@ class Cord(Bot):
 
 
     async def on_ready(_):
-        print("Bot is alive, and ready")
-        print("Setting up...")
+        _.logger.info("Bot is alive, and ready")
+        _.logger.info("Setting up...")
         _._setup_user_traits()
         if _.setup: await _.setup()
-        print("Finished setup")
+        _.logger.info("Finished setup")
         await _.data.load_data()
         if _.autosave: await _.data.autosave()
 
@@ -132,7 +141,7 @@ class Cord(Bot):
         try:
             await _.entry(user_card)
         except Exception as e:
-            print(f"Exception: {e}")
+            _.logger.info(f"Exception: {e}")
 
         await user_card.construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
@@ -146,11 +155,11 @@ class Cord(Bot):
                                                            view=user_card.view_frame,
                                                            file=user_card.image_file)
         else:
-            print("Dashboard has nothing on it.")
+            _.logger.info("Dashboard has nothing on it.")
 
 
     async def announce(_, channel:GuildChannel, message:str=None, card:Card=None) -> Message:
-        if channel.type != ChannelType.text:print("announce() is only compatible with TextChannels")
+        if channel.type != ChannelType.text:_.logger.info("announce() is only compatible with TextChannels")
         else:\
         channel:TextChannel = channel
         if message and not card:
@@ -193,7 +202,7 @@ class Cord(Bot):
                                                                         view=user_card.view_frame,
                                                                         attachments=[user_card.image_file])
         else:
-            print("Dashboard has nothing on it.")
+            _.logger.info("Dashboard has nothing on it.")
 
 
     async def home(_, user_card:Card, interaction:Interaction) -> None:
@@ -204,7 +213,7 @@ class Cord(Bot):
         try:
             await _.entry(user_card)
         except Exception as e:
-            print(f"Exception: {e}")
+            _.logger.info(f"Exception: {e}")
 
         await user_card.construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
@@ -218,4 +227,4 @@ class Cord(Bot):
                                                                         view=user_card.view_frame,
                                                                         attachments=[user_card.image_file])
         else:
-            print("Dashboard has nothing on it.")
+            _.logger.info("Dashboard has nothing on it.")
