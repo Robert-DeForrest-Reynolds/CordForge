@@ -11,6 +11,7 @@ from typing import Callable, Any
 
 from .components import *
 from .card import Card
+from .object import Object
 from .colors import *
 from .font import Font as CFFont
 from .vector2 import Vector2
@@ -32,6 +33,7 @@ class Cord(Bot):
         _.user_profiles = {}
         _.message:Message = None
         _.font:Font = None
+        _.objects:dict[str:Object] = {}
         _.data = Data(_)
         _._handle_alias()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())

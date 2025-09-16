@@ -1,13 +1,14 @@
 # Generalized imports for dev utility
 from PIL import Image
-from discord import *
-from discord.ext.commands import *
-from discord.abc import *
+from discord import Interaction, Message
+from discord.ext.commands import Context
+from discord.abc import GuildChannel
 from asyncio import sleep, create_task
 
 # CordForge specific
 from .cord import Cord
 from .card import Card
+from .object import Object
 from .vector2 import Vector2
 from .colors import *
 from .font import Font

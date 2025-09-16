@@ -1,33 +1,30 @@
 from discord import Member
+from .object import Object
 from typing import Any
 
 
-class User:
+class User(Object):
     account:Member
+    id:int
     name:str
     nickname:str
-    id:int
 
     def __init__(_, account:Member) -> None:
-        object.__setattr__(_, "account", account)
-        object.__setattr__(_, "id", account.id)
+        super().__init__()
+        _.account = account
+        _.id = account.id
         _.name = account.name
         _.nickname = account.nick
-        _.data = {}
-
-        for key, value in User.__dict__.items():
-            if not key.startswith("__") and key not in ["account", "id", "name", "nickname", "data", "add_trait"]:
-                _.data[key] = value
+        _._immutables.append["account", "id", "name"]
+        _._builtins = ["nickname", "add_trait"].append(_._immutables)
 
 
     def __setattr__(_, name, value):
-        if name in ["account", "id"]:
+        if name in _._immutables:
             raise AttributeError(f"Cannot modify Player.{name}. These are determined by the user's Discord profile,\
                                  and are used by CordForge for various validations, and utilities.")
         super().__setattr__(name, value)
-        if name not in  ["name", "nickname", "data"]:
-            print(name)
-            _.data.update({name:value})
+        _.data.update({name:value})
 
 
     @staticmethod
