@@ -13,7 +13,7 @@ from .font import Font
 from .user import User
 
 class Card:
-    def __init__(_, user:User=None, use:Context|Interaction=None) -> None:
+    def __init__(_, user:User=None) -> None:
         _.user = user
         _.view_frame:View = None
         _.embed_frame:Embed = None
@@ -27,14 +27,6 @@ class Card:
         _.width = 640
         _.font = Font(24)
         _.message:Message = None
-
-
-    @property
-    def x_center(_): return _.width // 2
-    @property
-    def y_center(_): return _.height // 2
-    @property
-    def image_center(_): return Vector2(_.x_center, _.y_center)
 
 
     async def construct(_) -> "Card":
@@ -94,19 +86,19 @@ class Card:
     
 
     async def panel(_, x:int=0, y:int=0, parent:Component|None=None,
-                        width:int|None=None, height:int|None=None, 
-                        background:Color=GRAY, border:bool=False) -> Component:
+                    width:int|None=None, height:int|None=None, 
+                    background:Color=GRAY, border:bool=False) -> Component:
         '''
         Create a Container Component\n
         A container's height and width is by default the parent container if given one, elsewise it's the Cord object that is it is created with.
         '''
         new_container = Panel(cord=_, x=x, y=y, parent=parent,
-                                 width=width, height=height,
-                                 background=background, border=border)
+                                width=width, height=height,
+                                background=background, border=border)
         if parent == None:
             _.image_components.append(new_container)
         else:
-            parent.Children.append(new_container)
+            parent.children.append(new_container)
         return new_container
 
 

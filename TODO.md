@@ -1,5 +1,10 @@
 # Currently
- - Container Automatic Layout Filling
+ - Load necessary profiles so that user can have a development bot and server, and a official bot and server(s)
+the profiles will need to hold:
+ - servers
+ - channels
+
+ - profiles will be decided using the chosen key
 
 # Components to Implements:
  - VerticalContainer

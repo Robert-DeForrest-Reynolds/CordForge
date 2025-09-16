@@ -34,9 +34,12 @@ class Cord(Bot):
         _.font:Font = None
         _.data = Data(_)
         _._handle_alias()
-        _._setup_user_traits()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
         
+
+    def __setattr__(_, name, value):
+        return super().__setattr__(name, value)
+
 
     def _handle_alias(_) -> None:
         _.prefix = [_.entry_command[0]]
@@ -70,6 +73,17 @@ class Cord(Bot):
     def _setup_user_traits(_) -> None:
         for [trait, value] in _.user_traits:
             User.add_trait(trait, value)
+
+
+    def determine(_, dictionary:dict, callable:Callable=None) -> Any:
+        '''
+        Determines with key is being used, and selects the dependant items,\
+        can optionally provide callback to is on determine.
+        '''
+        selection = dictionary[_.instance_user]
+        if callable:
+            selection = callable(selection)
+        return selection
         
 
     def run_task(_, Task, *Arguments) -> Any:
@@ -95,6 +109,7 @@ class Cord(Bot):
     async def on_ready(_):
         print("Bot is alive, and ready")
         print("Setting up...")
+        _._setup_user_traits()
         if _.setup: await _.setup()
         print("Finished setup")
         await _.data.load_data()
@@ -110,7 +125,7 @@ class Cord(Bot):
         
         if _.message is not None: await _.message.delete()
 
-        user_card:Card = await _.new_card(user, initial_context)
+        user_card:Card = await _.new_card(user)
 
         try:
             await _.entry(user_card)
@@ -141,19 +156,20 @@ class Cord(Bot):
         elif message and card:
             card.embed_frame = Embed(title="")
             card.embed_frame.set_image(url="attachment://GameImage.png")
+            await card.construct()
             await card._buffer_image()
             await channel.send(message, embed=card.embed_frame,
                                view=card.view_frame,
                                file=card.image_file)
             
 
-    async def new_card(_, user:Member=None, initial_context:Context=None) -> Card:
+    async def new_card(_, user:Member=None) -> Card:
         '''
         Create new card to draw on.
 
         Returns instantiated Card
         '''
-        user_card:Card = Card(user, initial_context)
+        user_card:Card = Card(user)
         return user_card
 
 
