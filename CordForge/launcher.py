@@ -5,10 +5,12 @@ from subprocess import *
 from glob import glob
 from sys import argv
 from pathlib import Path
+from asyncio import run as async_run
 
 
 class Launcher:
     def __init__(_):
+        _.bot = None
         _.key = None
         _.commands = {"start": _.start,
                       "restart": _.restart,
@@ -30,12 +32,12 @@ class Launcher:
         elif platform.startswith("linux"):
             _.call_command = [_.virtual_environment_path, "-B", _.entry_path, _.key_selection]
         
-        _.user_input()
+        async_run(_.user_input())
 
 
-    def user_input(_):
+    async def user_input(_):
         while True:
-            admin_input = input()
+            admin_input = input("~")
             print("Input command: ", admin_input)
             try:
                 _.commands[admin_input.lower()]()
@@ -44,32 +46,25 @@ class Launcher:
     
 
     def bot_exists(_):
-        try:
-            Bot
-        except NameError:
-            return False
-        else:
-            return True
+        if _.bot == None: return False
+        return True
 
 
     def start(_):
-        global Bot
         print("Starting Bot...")
-        Bot = Popen(_.call_command)
+        _.bot = Popen(_.call_command)
 
 
     def restart(_):
-        global Bot
         if _.bot_exists():
             print("Restarting Discord bot...")
-            Bot.kill()
+            _.bot.kill()
             _.start()
             print("Discord bot restarted")
         else:
             print("There isn't a running bot")
 
     def exit(_):
-        global Bot
         if _.bot_exists() == False:
             exit()
         else:
@@ -77,25 +72,23 @@ class Launcher:
 
 
     def stop(_):
-        global Bot
         if _.bot_exists():
             print("Discord bot stopped")
-            Bot.kill()
-            del Bot
+            _.bot.kill()
+            _.bot = None
         else:
             print("There isn't a running bot")
 
 
     def emergency_stop(_):
-        global Bot
         if _.bot_exists() == False:
             print("Bot is not running it seems, stopping altogether though.")
             exit()
 
         if _.bot_exists():
             print("Discord bot stopped")
-            Bot.kill()
-            del Bot
+            _.bot.kill()
+            _.bot = None
             exit()
 
 

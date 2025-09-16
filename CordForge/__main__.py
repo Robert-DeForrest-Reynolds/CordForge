@@ -1,7 +1,7 @@
 from CordForge.launcher import Launcher
 
 def run():
-    print("Launching Launcher")
+    print("Launcher running...")
     Launcher()
 
 if __name__ == "__main__":
