@@ -21,9 +21,6 @@ class Data:
             mkdir("Data")
         if not exists(usersDirectory):
             mkdir(usersDirectory)
-        
-        if autosave:
-            _.autosave()
 
 
     def __setattr__(_, name, value):
@@ -37,11 +34,12 @@ class Data:
 
 
     async def autosave(_) -> None:
+        print("Starting autosave loop...")
         while True:
             await sleep(_.autosave_interval)
-            print("Autosaving")
+            print("Autosaving...")
             user:User
-            for user in _.cord.users.values():
+            for user in _.cord.user_profiles.values():
                 with open(join(usersDirectory, f"{user.id}.cf"), "w") as file:
                     data_string = ""
                     for name, value in user.data.items():
@@ -59,10 +57,11 @@ class Data:
                             data_string += f"{name}={value}\n"
                         data_string = data_string[:-1]
                         file.write(data_string)
+            print("Finished autosaving")
 
 
     async def load_data(_) -> None:
-        print("Loading data")
+        print("Loading data...")
         for file in listdir(usersDirectory):
             id = int(file[:-3])
             with open(join(usersDirectory, file), 'r') as file:
@@ -72,7 +71,7 @@ class Data:
                 
                 if member:
                     user = User(member)
-                    _.cord.users.update({id:user})
+                    _.cord.user_profiles.update({id:user})
                     for line in contents:
                         name, value = line.split("=")
                         if value.replace(".", "").isdecimal():
@@ -81,6 +80,7 @@ class Data:
                             value = int(value)
                         user.__setattr__(name, value)
                     print(f"Loaded {member.name}'s Data")
+        print("All data loaded")
 
 
     async def reset_user(_, user:User) -> None:

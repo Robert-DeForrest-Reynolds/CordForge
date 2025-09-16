@@ -13,7 +13,7 @@ from .font import Font
 from .user import User
 
 class Card:
-    def __init__(_, user:User, use:Context|Interaction) -> None:
+    def __init__(_, user:User=None, use:Context|Interaction=None) -> None:
         _.user = user
         _.view_frame:View = None
         _.embed_frame:Embed = None
@@ -129,7 +129,7 @@ class Card:
                    items:list[str:display_item] = [], font=None,
                    separation:int=4, horizontal:bool=False,
                    vertical_center:bool=False, horizontal_center:bool=False) -> None:
-        new_display = display(cord=_, x=x, y=y, parent=parent,
+        new_display = Display(cord=_, x=x, y=y, parent=parent,
                        width=width, height=height,
                        items=items, font=font,
                        separation=separation,

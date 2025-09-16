@@ -16,8 +16,7 @@ class Display(Component):
                  items:list[str], font:Font, separation:int,
                  horizontal:bool, vertical_center:bool, horizontal_center:bool) -> None:
         super().__init__(cord=cord, x=x, y=y, parent=parent, width=width, height=height)
-        _.font = font if font is not None else None
-        _.font = _.parent.font if _.parent else _.cord.font
+        _.font = font if font is not None else _.font
         _.height = _.cord.height
         _.items = items
         _.separation = separation
@@ -39,11 +38,11 @@ class Display(Component):
         ruler = 0
         item:DisplayItem
         for item in _.items:
-            font = item.font if item.font else _.font
+            font = item.font if item.font is not None else _.font
             numeric = None
             try:numeric = await format_numeric(float(Decimal(item.text.replace(",",""))))
             except InvalidOperation: pass
-            font_width = await _.get_text_width(numeric, Font=font) if numeric else await _.get_text_width(item.text, Font=font)
+            font_width = await _.get_text_width(numeric, font=font) if numeric else await _.get_text_width(item.text, font=font)
             if item.image:
                 if _.horizontal_center:
                     image_x = _.x_center - font_width//2 - item.image.width + item.separation

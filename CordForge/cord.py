@@ -1,13 +1,12 @@
 from os.path import join
 from PIL import Image
-from io import BytesIO
-from discord import File as DiscordFile
-from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message
+from discord.enums import ChannelType
+from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message, TextChannel, VoiceChannel
+from discord.abc import GuildChannel
 from discord.ext.commands import Command, Bot, Context
-from discord.ui import Button, View
 from sys import argv, path
 from itertools import product
-import asyncio
+from asyncio import get_running_loop, run
 from typing import Callable, Any
 
 from .components import *
@@ -17,27 +16,27 @@ from .font import Font as CFFont
 from .vector2 import Vector2
 from .user import User
 from .data import Data
+from .font import Font
 
 
 class Cord(Bot):
-    Message:Message
-    def __init__(_, entry_command:str, entry:Callable, user_traits:list[list[str, Any]]=[], autosave:bool=True) -> None:
+    def __init__(_, entry_command:str=None, autosave:bool=True) -> None:
         _.entry_command = entry_command
-        _._entry = entry
+        _.entry:Callable = None
+        _.setup:Callable = None
         _.autosave = autosave
-        _._handle_alias()
         _.source_directory = path[0]
         _.instance_user:str = argv[1]
         _.user_dashboards:dict[str:Panel] = {}
-        _.data = Data(_)
-        _.user_traits = user_traits
+        _.user_traits:list[list[str, Any]] = []
         _.user_profiles = {}
         _.message:Message = None
-        print("Discord Bot Initializing")
+        _.font:Font = None
+        _.data = Data(_)
+        _._handle_alias()
         _._setup_user_traits()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
         
-
 
     def _handle_alias(_) -> None:
         _.prefix = [_.entry_command[0]]
@@ -71,6 +70,35 @@ class Cord(Bot):
     def _setup_user_traits(_) -> None:
         for [trait, value] in _.user_traits:
             User.add_trait(trait, value)
+        
+
+    def run_task(_, Task, *Arguments) -> Any:
+        try: get_running_loop()
+        except RuntimeError: return run(Task(*Arguments))
+        raise RuntimeError("There is an existing loop. Run() is only used for setup before the Bot runs it's loop.")
+
+
+    def launch(_, entry:Callable, setup:Callable=None) -> None:
+        print("Launching...")
+        'Start Discord Bot'
+        _.entry = entry
+        _.setup = setup
+        _.run(_._get_token(_.instance_user))
+
+
+    async def setup_hook(_):
+        async def wrapper(initial_context): await _._send_initial_card(initial_context)
+        _.add_command(Command(wrapper, aliases=_.entry_command))
+        await super().setup_hook()
+
+
+    async def on_ready(_):
+        print("Bot is alive, and ready")
+        print("Setting up...")
+        if _.setup: await _.setup()
+        print("Finished setup")
+        await _.data.load_data()
+        if _.autosave: await _.data.autosave()
 
 
     async def _send_initial_card(_, initial_context:Context) -> None:
@@ -85,7 +113,7 @@ class Cord(Bot):
         user_card:Card = await _.new_card(user, initial_context)
 
         try:
-            await _._entry(user_card)
+            await _.entry(user_card)
         except Exception as e:
             print(f"Exception: {e}")
 
@@ -104,30 +132,22 @@ class Cord(Bot):
             print("Dashboard has nothing on it.")
 
 
-    async def setup_hook(_):
-        async def wrapper(initial_context): await _._send_initial_card(initial_context)
-        _.add_command(Command(wrapper, aliases=_.entry_command))
-        await super().setup_hook()
+    async def announce(_, channel:GuildChannel, message:str=None, card:Card=None) -> Message:
+        if channel.type != ChannelType.text:print("announce() is only compatible with TextChannels")
+        else:\
+        channel:TextChannel = channel
+        if message and not card:
+            await channel.send(message)
+        elif message and card:
+            card.embed_frame = Embed(title="")
+            card.embed_frame.set_image(url="attachment://GameImage.png")
+            await card._buffer_image()
+            await channel.send(message, embed=card.embed_frame,
+                               view=card.view_frame,
+                               file=card.image_file)
+            
 
-
-    async def on_ready(_) -> None:
-        print("Bot is alive.\n")
-        await _.data.load_data()
-        if _.autosave: await _.data.autosave()
-    
-
-    def run_task(_, Task, *Arguments) -> Any:
-        try: asyncio.get_running_loop()
-        except RuntimeError: return asyncio.run(Task(*Arguments))
-        raise RuntimeError("There is an existing loop. Run() is only used for setup before the Bot runs it's loop.")
-
-
-    def launch(_) -> None:
-        'Start Discord Bot'
-        _.run(_._get_token(_.instance_user))
-
-
-    async def new_card(_, user:Member, initial_context:Context) -> Card:
+    async def new_card(_, user:Member=None, initial_context:Context=None) -> Card:
         '''
         Create new card to draw on.
 
@@ -162,8 +182,9 @@ class Cord(Bot):
         '''
         Brings the user back to the entry() function card
         '''
+
         try:
-            await _._entry(user_card)
+            await _.entry(user_card)
         except Exception as e:
             print(f"Exception: {e}")
 

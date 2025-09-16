@@ -54,14 +54,14 @@ class Launcher:
 
     def start(_):
         global Bot
-        print("Starting Cord")
+        print("Starting Bot...")
         Bot = Popen(_.call_command)
 
 
     def restart(_):
         global Bot
         if _.bot_exists():
-            print("Restarting Discord bot")
+            print("Restarting Discord bot...")
             Bot.kill()
             _.start()
             print("Discord bot restarted")

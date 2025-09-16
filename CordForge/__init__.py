@@ -1,7 +1,11 @@
-from sys import dont_write_bytecode
-from discord import Interaction
-from discord.ext.commands import Context
-dont_write_bytecode = True
+# Generalized imports for dev utility
+from PIL import Image
+from discord import *
+from discord.ext.commands import *
+from discord.abc import *
+from asyncio import sleep, create_task
+
+# CordForge specific
 from .cord import Cord
 from .card import Card
 from .vector2 import Vector2

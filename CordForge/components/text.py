@@ -9,6 +9,7 @@ class Text(Component):
                  content:str, color:Color, background:Color,
                  font:Font, center:bool):
         super().__init__(cord=cord, parent=parent, width=None, height=None, color=color, font=font, background=background)
+        _.font = font if font is not None else _.font
         _.content = content
         _.center = center
         if type(position) is list:
@@ -16,7 +17,6 @@ class Text(Component):
         else:
             _.position = position
         _.color = color
-        _.font = font if font is not None else _.cord.font
 
 
     async def draw(_) -> Image:

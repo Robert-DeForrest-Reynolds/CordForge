@@ -16,7 +16,7 @@ class User:
         _.data = {}
 
         for key, value in User.__dict__.items():
-            if not key.startswith("__") and key not in ["account", "id", "name", "nickname", "data", "add_player_trait"]:
+            if not key.startswith("__") and key not in ["account", "id", "name", "nickname", "data", "add_trait"]:
                 _.data[key] = value
 
 
