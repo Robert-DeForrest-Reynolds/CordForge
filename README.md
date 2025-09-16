@@ -1,6 +1,6 @@
-Discord Bot Library - A set of tools for bot management, image manipulation, easy data persistence, and more for making Games and bots
+Discord Bot Library for Writing Discord Bots with in Python 
 
-Essentially just a wrapper over discord.py and Pillow, with a lot of extra fluff to make life a lot easier for image-based, and gameplay focused Discord bots.
+A wrapper over discord.py and Pillow for bot management, image manipulation, easy data persistence, and more for making gameplay focused discord bots, but capable of making pretty much any kind of discord bot
 Provides:
  - Image creation with a UI system, and sprite management
  - Out-of-the-box persistent data management for players with extensibility to handle anything
@@ -14,6 +14,8 @@ Provides:
 
 # Installation
 Requires Python 3.13+
+discord.py
+pillow
 
 ### Installing CordForge
 ```bash
