@@ -13,9 +13,10 @@ Provides:
 
 
 # Installation
-Requires Python 3.13+
-discord.py
-pillow
+Requires:
+ - Python 3.13+
+ - discord.py
+ - pillow
 
 ### Installing CordForge
 ```bash
@@ -115,7 +116,9 @@ bot.launch()
 
 ### More Information
 Cord inherits from discord.py's `Bot` class, so you could add commands, cogs, and whatnot as you might normally.
+
 The `Card` class `_.image` is a pillow image, and you can use all of it's variables, and functions.
+
 Anything that CordForge can't do, can easily be implemented alongside it.
 
 [Discord channel for any help](https://discord.gg/GGt4wZpujH)
