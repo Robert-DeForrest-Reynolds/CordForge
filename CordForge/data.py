@@ -51,8 +51,9 @@ class Data:
             name:str
             object:Object
             with open(join("data", f"objects.cf"), "w") as file:
-                for name, object in _.cord.objects.items():
+                for object_name, object in _.cord.objects.items():
                     data_string = ""
+                    data_string += f"{object_name}:"
                     for name, value in object.data.items():
                         data_string += f"{name}={value}~"
                     data_string = data_string[:-1] + "\n"
@@ -80,7 +81,7 @@ class Data:
                 contents = [line.strip() for line in file.readlines() if line != ""]
                 for guild in _.cord.guilds:
                     member = guild.get_member(id)
-                
+
                 if member:
                     user = User(member)
                     _.cord.user_profiles.update({id:user})
