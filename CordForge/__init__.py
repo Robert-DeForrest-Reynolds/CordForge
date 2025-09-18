@@ -16,3 +16,8 @@ from .components import *
 from .utilities import *
 from .user import User
 
+from sys import stdout
+
+import logging
+
+logging.basicConfig(stream=stdout, level=logging.INFO)

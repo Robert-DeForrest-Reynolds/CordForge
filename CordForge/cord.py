@@ -23,7 +23,6 @@ import logging
 
 class Cord(Bot):
     def __init__(_, entry_command: str = None, autosave: bool = True) -> None:
-        super().__init__(command_prefix=_.prefix, intents=Intents.all())
         _.logger = logging.getLogger("CordForge")
         _.logger.setLevel(logging.DEBUG)  # or INFO
         if not _.logger.hasHandlers():
@@ -44,7 +43,8 @@ class Cord(Bot):
         _.font:Font = None
         _.objects:dict[str:Object] = {}
         _.data = Data(_)
-        _._handle_alias()
+
+        _._handle_alias() # required before handing _.prefix to Bot.__init__()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
         
 
@@ -57,7 +57,7 @@ class Cord(Bot):
         for prefix in _.prefix.copy():
             _.prefix.extend([variant for variant in _._all_case_variants(prefix, _.prefix)\
                                         if variant not in _.prefix])
-        _.entry_command = [_.entry_command[1:]]
+        _.entry_command = [_.entry_command[1:]] 
         for alias in _.entry_command.copy():
             _.entry_command.extend([variant for variant in _._all_case_variants(alias, _.entry_command)\
                                         if variant not in _.entry_command])
@@ -129,13 +129,6 @@ class Cord(Bot):
 
     async def _send_initial_card(_, initial_context:Context) -> None:
         user:User = User(initial_context.author)
-        if user.id not in _.user_profiles.keys():
-            _.user_profiles.update({user.id:user})
-
-        await initial_context.message.delete()
-        
-        if _.message is not None: await _.message.delete()
-
         user_card:Card = await _.new_card(user)
 
         try:
@@ -143,6 +136,16 @@ class Cord(Bot):
         except Exception as e:
             _.logger.info(f"Exception: {e}")
 
+        if user.id not in _.user_profiles.keys():
+            _.user_profiles.update({user.id:user})
+
+        # Delete initial user message
+        await initial_context.message.delete()
+
+        # Delete past message, to avoid duplications
+        if _.message is not None: await _.message.delete()
+
+        # Construct Card, View, and Embed, and then send
         await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await initial_context.send(embed=user_card.embed_frame,
