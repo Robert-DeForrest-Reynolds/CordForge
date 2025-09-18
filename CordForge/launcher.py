@@ -1,27 +1,14 @@
-from sys import exit, platform, executable
+from sys import exit, executable
 from os import remove, getcwd
 from os.path import join
 from subprocess import  Popen, PIPE, STDOUT
 from glob import glob
 from sys import argv, stdout
-from asyncio import run as async_run
 
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import threading
 import logging
-
-class LoggingHandler(logging.Handler):
-    def __init__(_, launcher):
-        super().__init__()
-        _.launcher = launcher
-
-    def emit(_, record):
-        try:
-            msg = _.format(record)
-            _.launcher.append_text(msg)
-        except Exception:
-            _.handleError(record)
 
 
 class Launcher:
@@ -32,9 +19,10 @@ class Launcher:
             format="%(levelname)s:%(name)s:%(message)s"
         )
         _.logger = logging.getLogger("Launcher")
-        handler = LoggingHandler(_)
-        handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
-        logging.getLogger().addHandler(handler)
+        _.handler = logging.Handler()
+        _.handler.emit = _.log_emit
+        _.handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+        logging.getLogger().addHandler(_.handler)
 
         _.bot = None
         _.key = None
@@ -88,13 +76,17 @@ class Launcher:
         for line in stream:
             _.append_text(f"[{tag}] {line}")
 
-
-    def append_text(_, msg:str):
+            
+    def append_text(_, msg: str):
         raw_message = msg[9:]
         if msg.startswith("[stdout]"): msg = raw_message
-        
         if not msg.endswith("\n"): msg += "\n"
 
+        # schedule the GUI update on the main thread
+        _.root.after(0, lambda: _._append_text_safe(msg))
+
+
+    def _append_text_safe(_, msg: str):
         _.text.configure(state="normal")
         _.text.insert("end", msg)
         _.text.see("end")
@@ -103,13 +95,21 @@ class Launcher:
 
     def send_input(_, event):
         user_input = _.entry.get()
-        _.append_text(f"Input: {user_input}\n")
         if user_input in _.commands.keys():
+            _.append_text(f"Input: {user_input}\n")
             _.commands[user_input]()
         elif _.bot:
             _.bot.stdin.write(user_input + "\n")
             _.bot.stdin.flush()
         _.entry.delete(0, "end")
+
+
+    def log_emit(_, record):
+        try:
+            msg = _.handler.format(record)
+            _.append_text(msg)
+        except Exception:
+            _.handler.handleError(record)
 
 
     def start(_):

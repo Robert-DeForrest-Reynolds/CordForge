@@ -96,10 +96,10 @@ class Cord(Bot):
 
             
     def sync_stdin_listener(_):
-        print("Listening for input from launcher...")
+        _.logger.info("Listening for input from launcher...")
         for line in stdin:
             line = line.strip()
-            _.logger.info(f"[Launcher input]: {line}")
+            _.logger.info(f"Input: {line}")
 
 
     def determine(_, dictionary:dict, callable:Callable=None) -> Any:
