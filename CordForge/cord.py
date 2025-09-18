@@ -143,7 +143,7 @@ class Cord(Bot):
         except Exception as e:
             _.logger.info(f"Exception: {e}")
 
-        await user_card.construct()
+        await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await initial_context.send(embed=user_card.embed_frame,
                                                            view=user_card.view_frame)
@@ -159,6 +159,9 @@ class Cord(Bot):
 
 
     async def announce(_, channel:GuildChannel, message:str=None, card:Card=None) -> Message:
+        '''
+        Send a message, or Card to a specific channel
+        '''
         if channel.type != ChannelType.text:_.logger.info("announce() is only compatible with TextChannels")
         else:\
         channel:TextChannel = channel
@@ -167,7 +170,7 @@ class Cord(Bot):
         elif message and card:
             card.embed_frame = Embed(title="")
             card.embed_frame.set_image(url="attachment://GameImage.png")
-            await card.construct()
+            await card._construct()
             await card._buffer_image()
             await channel.send(message, embed=card.embed_frame,
                                view=card.view_frame,
@@ -190,7 +193,7 @@ class Cord(Bot):
 
 
     async def reply(_, user_card:Card, interaction:Interaction) -> None:
-        await user_card.construct()
+        await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
                                                                         view=user_card.view_frame)
@@ -215,7 +218,7 @@ class Cord(Bot):
         except Exception as e:
             _.logger.info(f"Exception: {e}")
 
-        await user_card.construct()
+        await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
                                                                         view=user_card.view_frame)

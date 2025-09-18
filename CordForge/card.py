@@ -29,7 +29,7 @@ class Card:
         _.message:Message = None
 
 
-    async def construct(_) -> "Card":
+    async def _construct(_) -> "Card":
         await _._construct_view()
         await _._construct_components()
         return _
@@ -61,25 +61,22 @@ class Card:
 
 
     async def new_image(_) -> Image:
-        'Create new image'
+        'Create new Image.'
         _.image = Image.new("RGBA",
-                                    (_.height, _.width),
-                                    color=_.dashboard_background)
+                            (_.height, _.width),
+                            color=_.dashboard_background)
         return _.image
-
-
-    async def send_image(_, interaction:Interaction, image_path:str) -> None:
-        _.image_file = DiscordFile(image_path, filename="GameImage.png")
-        await _.reply(interaction)
     
 
     async def save_image(_, path:str="CordImage") -> None:
+        'Save an image to file.'
         if not hasattr(_, "image") or _.image is None:
             raise ValueError("No image found. Did you run Create_Image first?")
         _.image.save(path + ".PNG", format="PNG")
 
 
     async def add_button(_, label:str, callback:Callable, arguments:list) -> None:
+        'Adds a Discord Button to the Card\'s View.'
         new_button = Button(label=label, style=ButtonStyle.grey)
         new_button.callback = lambda interaction: callback(_, interaction, *arguments)
         _.view_content.append(new_button)
@@ -106,6 +103,9 @@ class Card:
                    start:Vector2=Vector2(0,0), end:Vector2=Vector2(0,0),
                    color:Color=WHITE, fill_width:int=1,
                    curve:bool=False) -> None:
+        '''
+        Draw a line onto the Card's Image
+        '''
         new_line = Line(cord=_, x=x, y=y, parent=parent,
                        start=start, end=end,
                        fill_width=fill_width, color=color, curve=curve)
@@ -121,6 +121,9 @@ class Card:
                    items:list[str:board_item] = [], font=None,
                    separation:int=4, horizontal:bool=False,
                    vertical_center:bool=False, horizontal_center:bool=False) -> None:
+        '''
+        Draw a Board onto the Card's Image
+        '''
         new_display = Board(cord=_, x=x, y=y, parent=parent,
                        width=width, height=height,
                        items=items, font=font,
@@ -137,6 +140,9 @@ class Card:
     async def text(_, content, position:list[int,int]|Vector2|None=None, parent:Component|None=None,
                    color:Color=WHITE, background:Color=None, font:Font=None,
                    center:bool=False) -> Component:
+        '''
+        Draw text onto the Card's Image
+        '''
         new_text = Text(cord=_, content=content, position=position, parent=parent, color=color, background=background, font=font, center=center)
         if parent == None:
             _.image_components.append(new_text)
@@ -147,6 +153,9 @@ class Card:
 
     async def sprite(_, x:int=0, y:int=0, parent:Component|None=None,
                     sprite_image:Image=None, path:str=None) -> None:
+        '''
+        Copy another image ontothe Card's Image
+        '''
         new_sprite = Sprite(cord=_, x=x, y=y, parent=parent, sprite_image=sprite_image, path=path)
         if parent == None:
             _.image_components.append(new_sprite)
@@ -156,6 +165,9 @@ class Card:
 
 
     async def debug(_, vertical_center:bool=False, horizontal_center:bool=False) -> None:
+        '''
+        Draw debugging drawings like vertical, and horizontal, lines.
+        '''
         if vertical_center:
             await _.line(start=Vector2(_.x_center, 0), end=Vector2(_.x_center, _.height), fill_width=3, color=DEBUG_COLOR)
         if horizontal_center:
