@@ -4,10 +4,11 @@ from discord.enums import ChannelType
 from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message, TextChannel, VoiceChannel
 from discord.abc import GuildChannel
 from discord.ext.commands import Command, Bot, Context
-from sys import argv, path
+from sys import argv, path, stdin, stdout, stderr
 from itertools import product
-from asyncio import get_running_loop, run
+from asyncio import get_running_loop, run, StreamReader, StreamReaderProtocol, create_task
 from typing import Callable, Any
+import threading
 
 from .components import *
 from .card import Card
@@ -24,6 +25,13 @@ import logging
 class Cord(Bot):
     def __init__(_, entry_command: str = None, autosave: bool = True) -> None:
         _.logger = logging.getLogger("CordForge")
+        logging.basicConfig(stream=stdout, level=logging.INFO)
+        logging.basicConfig(stream=stderr, level=logging.INFO)
+        logging.basicConfig(
+            level=logging.INFO,
+            stream=stdout, # force everything to stdout
+            format="%(levelname)s:%(name)s:%(message)s"
+        )
         _.logger.setLevel(logging.DEBUG)  # or INFO
         if not _.logger.hasHandlers():
             handler = logging.StreamHandler()  # default to stdout
@@ -46,6 +54,7 @@ class Cord(Bot):
 
         _._handle_alias() # required before handing _.prefix to Bot.__init__()
         super().__init__(command_prefix=_.prefix, intents=Intents.all())
+        threading.Thread(target=_.sync_stdin_listener, args=(), daemon=True).start()
         
 
     def __setattr__(_, name, value):
@@ -84,6 +93,13 @@ class Cord(Bot):
     def _setup_user_traits(_) -> None:
         for [trait, value] in _.user_traits:
             User.add_trait(trait, value)
+
+            
+    def sync_stdin_listener(_):
+        print("Listening for input from launcher...")
+        for line in stdin:
+            line = line.strip()
+            _.logger.info(f"[Launcher input]: {line}")
 
 
     def determine(_, dictionary:dict, callable:Callable=None) -> Any:

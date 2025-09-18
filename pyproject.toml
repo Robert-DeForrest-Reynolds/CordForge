@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "CordForge"
-version = "0.3.6"
+version = "0.3.9"
 description = "Discord Bot Library - UI & Image Manipulation for Making Games"
 requires-python = ">=3.13"
 readme = "README.md"
@@ -18,7 +18,7 @@ dependencies = [
 
 [project.scripts]
 cordforge = "CordForge.__main__:run"
-cf = "CordForge.launcher"
+cf = "CordForge.__main__:run"
 
 [project.urls]
 Homepage = "https://github.com/Robert-DeForrest-Reynolds/CordForge"

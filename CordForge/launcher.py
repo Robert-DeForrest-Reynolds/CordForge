@@ -1,17 +1,41 @@
 from sys import exit, platform, executable
 from os import remove, getcwd
 from os.path import join
-from subprocess import  Popen, PIPE
+from subprocess import  Popen, PIPE, STDOUT
 from glob import glob
-from sys import argv
+from sys import argv, stdout
 from asyncio import run as async_run
 
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import threading
+import logging
+
+class LoggingHandler(logging.Handler):
+    def __init__(_, launcher):
+        super().__init__()
+        _.launcher = launcher
+
+    def emit(_, record):
+        try:
+            msg = _.format(record)
+            _.launcher.append_text(msg)
+        except Exception:
+            _.handleError(record)
+
 
 class Launcher:
     def __init__(_):
+        logging.basicConfig(
+            level=logging.INFO,
+            stream=stdout,
+            format="%(levelname)s:%(name)s:%(message)s"
+        )
+        _.logger = logging.getLogger("Launcher")
+        handler = LoggingHandler(_)
+        handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+        logging.getLogger().addHandler(handler)
+
         _.bot = None
         _.key = None
         _.working_directory = getcwd()
@@ -25,12 +49,12 @@ class Launcher:
         if len(argv) == 2:
             _.key_selection = argv[1]
         else:
-            print("No key chosen, finding first in Keys file.")
+            _.logger.info("No key chosen, finding first in Keys file.")
             with open(join(_.working_directory, "keys"), 'r') as keys:
                 _.key_selection = keys.readlines()[0].split("=")[0].strip()
 
         _.python = executable
-        _.call_command = [_.python, "-B", "entry.py", _.key_selection]
+        _.call_command = [_.python, "-u", "-B", "entry.py", _.key_selection]
 
         _.construct_window()
 
@@ -44,11 +68,9 @@ class Launcher:
         _.frame = tk.Frame(_.root, bg="grey")
         _.frame.pack(fill="both", padx=5, pady=5)
 
-        # Output area
-        _.text = ScrolledText(_.frame, bg="grey", state="disabled", wrap="word")
+        _.text = ScrolledText(_.frame, bg="#e2e2e2", state="disabled", wrap="word")
         _.text.pack(fill="both", expand=True)
 
-        # Input field
         _.entry = tk.Entry(_.frame, bg="lightgrey")
         _.entry.pack(fill="both", expand=True)
         _.entry.bind("<Return>", _.send_input)
@@ -70,7 +92,6 @@ class Launcher:
     def append_text(_, msg:str):
         raw_message = msg[9:]
         if msg.startswith("[stdout]"): msg = raw_message
-        elif msg.startswith("[stderr]"): msg = "Error:" + raw_message
         
         if not msg.endswith("\n"): msg += "\n"
 
@@ -85,12 +106,15 @@ class Launcher:
         _.append_text(f"Input: {user_input}\n")
         if user_input in _.commands.keys():
             _.commands[user_input]()
+        elif _.bot:
+            _.bot.stdin.write(user_input + "\n")
+            _.bot.stdin.flush()
         _.entry.delete(0, "end")
 
 
     def start(_):
-        _.append_text("\n\nStarting Bot...")
-        _.bot = Popen(_.call_command, stdin=PIPE, stdout=PIPE, stderr=PIPE, text=True, bufsize=1)
+        _.logger.info("Starting Bot...")
+        _.bot = Popen(_.call_command, stdin=PIPE, stdout=PIPE, stderr=STDOUT, text=True, bufsize=1)
 
         threading.Thread(target=_.read_stream, args=(_.bot.stdout, "stdout"), daemon=True).start()
         threading.Thread(target=_.read_stream, args=(_.bot.stderr, "stderr"), daemon=True).start()
@@ -98,24 +122,24 @@ class Launcher:
 
     def restart(_):
         if _.bot:
-            _.append_text("Restarting Discord bot...")
+            _.logger.info("Restarting Discord bot...")
             _.bot = _.bot.kill()
             _.start()
-            _.append_text("Discord bot restarted")
+            _.logger.info("Discord bot restarted")
         else:
-            _.append_text("There isn't a running bot")
+            _.logger.info("There isn't a running bot")
 
 
     def exit(_):
         if not _.bot:
             exit()
         else:
-            _.append_text("There is a running bot")
+            _.logger.info("There is a running bot")
 
 
     def stop(_):
         if _.bot:
-            _.append_text("Discord bot stopped")
+            _.logger.info("Discord bot stopped")
             _.bot = _.bot.kill()
         else:
             print("There isn't a running bot")
@@ -123,11 +147,11 @@ class Launcher:
 
     def emergency_stop(_):
         if not _.bot:
-            _.append_text("Bot is not running it seems, stopping altogether though.")
+            _.logger.info("Bot is not running it seems, stopping altogether though.")
             exit()
 
         if _.bot:
-            _.append_text("Discord bot stopped")
+            _.logger.info("Discord bot stopped")
             _.bot = _.bot.kill()
             exit()
 

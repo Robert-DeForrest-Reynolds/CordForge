@@ -21,3 +21,4 @@ from sys import stdout
 import logging
 
 logging.basicConfig(stream=stdout, level=logging.INFO)
+logging.basicConfig(stream=stdout, level=logging.INFO)
