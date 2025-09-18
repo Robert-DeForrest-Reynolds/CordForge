@@ -61,7 +61,7 @@ class Launcher:
 
     def construct_window(_) -> None:
         _.root = tk.Tk()
-        _.root.title(f"{_.working_directory}")
+        _.root.title("")
 
         _.root.protocol("WM_DELETE_WINDOW", _.close_window)
 
@@ -79,7 +79,7 @@ class Launcher:
 
     def close_window(_) -> None:
         if _.bot:
-            print("Bot is running, killing before closing")
+            _.logger.warning("Bot is running, killing before closing")
             _.bot.kill()
         _.root.quit()
 
@@ -117,7 +117,6 @@ class Launcher:
         _.bot = Popen(_.call_command, stdin=PIPE, stdout=PIPE, stderr=STDOUT, text=True, bufsize=1)
 
         threading.Thread(target=_.read_stream, args=(_.bot.stdout, "stdout"), daemon=True).start()
-        threading.Thread(target=_.read_stream, args=(_.bot.stderr, "stderr"), daemon=True).start()
 
 
     def restart(_):
@@ -127,14 +126,14 @@ class Launcher:
             _.start()
             _.logger.info("Discord bot restarted")
         else:
-            _.logger.info("There isn't a running bot")
+            _.logger.warning("There isn't a running bot")
 
 
     def exit(_):
         if not _.bot:
             exit()
         else:
-            _.logger.info("There is a running bot")
+            _.logger.warning("There is a running bot")
 
 
     def stop(_):
@@ -142,12 +141,12 @@ class Launcher:
             _.logger.info("Discord bot stopped")
             _.bot = _.bot.kill()
         else:
-            print("There isn't a running bot")
+            _.logger.info("There isn't a running bot")
 
 
     def emergency_stop(_):
         if not _.bot:
-            _.logger.info("Bot is not running it seems, stopping altogether though.")
+            _.logger.warning("Bot is not running it seems, stopping altogether though.")
             exit()
 
         if _.bot:
@@ -161,7 +160,7 @@ class Launcher:
             try:
                 remove(file)
             except OSError:
-                print("Error removing log files for some reason")
+                _.logger.warning("Error removing log files for some reason")
 
 
 if __name__ == "__main__":
