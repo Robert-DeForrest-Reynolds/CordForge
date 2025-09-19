@@ -12,12 +12,16 @@ class User(Object):
 
     def __init__(_, account:Member) -> None:
         super().__init__()
-        _.account = account
-        _.id = account.id
-        _.name = account.name
-        _.nickname = account.nick
-        _._immutables.append["account", "id", "name"]
-        _._builtins = ["nickname", "add_trait"].append(_._immutables)
+        if account:
+            _.account = account
+            _.id = account.id
+            _.name = account.name
+            _.nickname = account.nick
+            _._immutables.extend(["account", "id", "name"])
+            print(_._immutables)
+            _._builtins = ["nickname", "add_trait"].append(_._immutables)
+        else:
+            print("User instantiation not supplied with Member")
 
 
     def __setattr__(_, name, value):

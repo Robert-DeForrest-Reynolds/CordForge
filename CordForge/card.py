@@ -28,6 +28,14 @@ class Card:
         _.message:Message = None
 
 
+    @property
+    def x_center(_) -> int: return _.width // 2
+    @property
+    def y_center(_) -> int: return _.height // 2
+    @property
+    def center(_) -> int: return Vector2(_.x_center, _.y_center)
+
+
     async def _construct(_) -> "Card":
         await _._construct_view()
         await _._construct_components()

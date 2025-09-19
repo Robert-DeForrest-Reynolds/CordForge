@@ -1,0 +1,4 @@
+discord.py
+pillow
+pytest
+pytest-asyncio
