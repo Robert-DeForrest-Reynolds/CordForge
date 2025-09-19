@@ -71,6 +71,10 @@ bot.launch(entry)
 
 ### Launch & Use Bot
 ```bash
+cf dev_name
+```
+or
+```
 cordforge dev_name
 ```
 
