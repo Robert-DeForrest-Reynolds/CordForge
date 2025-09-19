@@ -1,4 +1,5 @@
 discord.py
 pillow
 pytest
+pytest-cov
 pytest-asyncio
