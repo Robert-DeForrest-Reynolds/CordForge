@@ -1,10 +1,9 @@
 from discord import File as DiscordFile
 from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message
 from discord.ui import Button, View
-from discord.ext.commands import Context
 from PIL import Image
 from io import BytesIO
-from typing import Callable, Any
+from typing import Callable
 
 from .components import *
 from .colors import *

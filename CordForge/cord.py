@@ -114,14 +114,6 @@ class Cord(Bot):
         raise RuntimeError("There is an existing loop. Run() is only used for setup before the Bot runs it's loop.")
 
 
-    def launch(_, entry:Callable, setup:Callable=None) -> None:
-        _.logger.info("Launching...")
-        'Start Discord Bot'
-        _.entry = entry
-        _.setup = setup
-        _.run(_._get_token(_.instance_user))
-
-
     async def setup_hook(_):
         async def wrapper(initial_context): await _._send_initial_card(initial_context)
         _.add_command(Command(wrapper, aliases=_.entry_command))
@@ -130,10 +122,12 @@ class Cord(Bot):
 
     async def on_ready(_):
         _.logger.info("Bot is alive, and ready")
+
         _.logger.info("Setting up...")
         _._setup_user_traits()
         if _.setup: await _.setup()
         _.logger.info("Finished setup")
+        
         await _.data.load_data()
         if _.autosave: await _.data.autosave()
 
@@ -150,13 +144,11 @@ class Cord(Bot):
         if user.id not in _.user_profiles.keys():
             _.user_profiles.update({user.id:user})
 
-        # Delete initial user message
         await initial_context.message.delete()
 
-        # Delete past message, to avoid duplications
+        # this needs to be fixed, only handles a single player currently
         if _.message is not None: await _.message.delete()
 
-        # Construct Card, View, and Embed, and then send
         await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await initial_context.send(embed=user_card.embed_frame,
@@ -170,6 +162,15 @@ class Cord(Bot):
                                                            file=user_card.image_file)
         else:
             _.logger.info("Dashboard has nothing on it.")
+
+
+
+    def launch(_, entry:Callable, setup:Callable=None) -> None:
+        'Start Discord Bot'
+        _.logger.info("Launching...")
+        _.entry = entry
+        _.setup = setup
+        _.run(_._get_token(_.instance_user))
 
 
     async def announce(_, channel:GuildChannel, message:str=None, card:Card=None) -> Message:
@@ -207,6 +208,9 @@ class Cord(Bot):
 
 
     async def reply(_, user_card:Card, interaction:Interaction) -> None:
+        '''
+        Send a card to a user as a result of an interaction
+        '''
         await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
