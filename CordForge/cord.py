@@ -21,13 +21,6 @@ import logging
 class Cord(Bot):
     def __init__(_, entry_command: str = None, autosave: bool = True) -> None:
         _.logger = logging.getLogger("CordForge")
-        logging.basicConfig(stream=stdout, level=logging.INFO)
-        logging.basicConfig(stream=stderr, level=logging.INFO)
-        logging.basicConfig(
-            level=logging.INFO,
-            stream=stdout, # force everything to stdout
-            format="%(levelname)s:%(name)s:%(message)s"
-        )
         _.logger.setLevel(logging.DEBUG)  # or INFO
         if not _.logger.hasHandlers():
             handler = logging.StreamHandler()  # default to stdout
@@ -95,17 +88,6 @@ class Cord(Bot):
         for line in stdin:
             line = line.strip()
             _.logger.info(f"Input: {line}")
-
-
-    def determine(_, dictionary:dict, callable:Callable=None) -> Any:
-        '''
-        Determines with key is being used, and selects the dependant items,\
-        can optionally provide callback to is on determine.
-        '''
-        selection = dictionary[_.instance_user]
-        if callable:
-            selection = callable(selection)
-        return selection
         
 
     def run_task(_, Task, *Arguments) -> Any:
@@ -173,10 +155,19 @@ class Cord(Bot):
         _.run(_._get_token(_.instance_user))
 
 
+    def determine(_, dictionary:dict, callable:Callable=None) -> Any:
+        '''
+        Uses the chosen key to determine which dictonary item is selected,\
+        can optionally provide callback to is on determine.
+        '''
+        selection = dictionary[_.instance_user]
+        if callable:
+            selection = callable(selection)
+        return selection
+
+
     async def announce(_, channel:GuildChannel, message:str=None, card:Card=None) -> Message:
-        '''
-        Send a message, or Card to a specific channel
-        '''
+        'Send a message, or Card to a specific channel'
         if channel.type != ChannelType.text:_.logger.info("announce() is only compatible with TextChannels")
         else:\
         channel:TextChannel = channel
@@ -208,9 +199,7 @@ class Cord(Bot):
 
 
     async def reply(_, user_card:Card, interaction:Interaction) -> None:
-        '''
-        Send a card to a user as a result of an interaction
-        '''
+        'Send a card to a user as a result of an interaction'
         await user_card._construct()
         if user_card.view_frame.total_children_count > 0 and user_card.image == None:
             user_card.message = await interaction.response.edit_message(embed=user_card.embed_frame,
@@ -227,10 +216,7 @@ class Cord(Bot):
 
 
     async def home(_, user_card:Card, interaction:Interaction) -> None:
-        '''
-        Brings the user back to the entry() function card
-        '''
-
+        'Brings the user back to the entry() function card'
         try:
             await _.entry(user_card)
         except Exception as e:

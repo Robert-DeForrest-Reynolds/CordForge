@@ -20,5 +20,8 @@ from sys import stdout
 
 import logging
 
-logging.basicConfig(stream=stdout, level=logging.INFO)
-logging.basicConfig(stream=stdout, level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    stream=stdout, # force everything to stdout
+    format="%(asctime)s %(levelname)s:%(name)s:%(message)s"
+)

@@ -33,6 +33,7 @@ class Launcher:
                       "stop": _.stop,
                       "//": _.emergency_stop,
                       "clear logs": _.clear_logs}
+        _.toggle = True
         
         if len(argv) == 2:
             _.key_selection = argv[1]
@@ -57,6 +58,8 @@ class Launcher:
         _.frame.pack(fill="both", padx=5, pady=5)
 
         _.text = ScrolledText(_.frame, bg="#e2e2e2", state="disabled", wrap="word")
+        _.text.tag_config("first", background="#858585")
+        _.text.tag_config("second", background="#A8A8A8")
         _.text.pack(fill="both", expand=True)
 
         _.entry = tk.Entry(_.frame, bg="lightgrey")
@@ -78,17 +81,19 @@ class Launcher:
 
             
     def append_text(_, msg: str):
+        tag = "first" if _.toggle else "second"
+        _.toggle = not _.toggle  # flip for next call
         raw_message = msg[9:]
         if msg.startswith("[stdout]"): msg = raw_message
         if not msg.endswith("\n"): msg += "\n"
 
         # schedule the GUI update on the main thread
-        _.root.after(0, lambda: _._append_text_safe(msg))
+        _.root.after(0, lambda: _._append_text_safe(msg, tag))
 
 
-    def _append_text_safe(_, msg: str):
+    def _append_text_safe(_, msg: str, tag:str):
         _.text.configure(state="normal")
-        _.text.insert("end", msg)
+        _.text.insert("end", msg, tag)
         _.text.see("end")
         _.text.configure(state="disabled")
 
