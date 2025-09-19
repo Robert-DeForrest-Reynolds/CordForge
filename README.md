@@ -50,6 +50,7 @@ Your "main" file must be called `entry.py`
 ```python
 from CordForge import *
 
+bot = Cord("cmd")
 
 # Initial send of dashboard, all other functions are replys/edits of the sent message
 async def entry(user_card:Card) -> Card:
@@ -64,10 +65,8 @@ async def some_other_card(user_card:Card, interaction) -> None:
     await user_card.add_button("Home", roc.home, [])
     await roc.reply(user_card, interaction)
 
-
-bot = Cord(entry_command="cmd", entry=entry)
 # any necessary setup, loading images into memory, data management, etc.
-bot.launch()
+bot.launch(entry)
 ```
 
 ### Launch & Use Bot
@@ -88,9 +87,11 @@ A players profile is created, and saved as soon as they use their first panel. Y
 ```python
 from CordForge import *
 
+bot = Cord("cmd")
 
 # Initial send of dashboard, all other functions are replys/edits of the sent message
 async def entry(user_card:Card) -> Card:
+    await user_card.new_image()
     await user_card.add_button(f"Money: {user_card.user.wallet}", give_money, [])
 
 
@@ -99,14 +100,12 @@ async def give_money(user_card:Card, interaction) -> None:
     await bot.home(user_card, interaction)
 
 
-player_traits = [
+traits = [
     # [trait name, trait value]
     ["wallet", 0.00],
 ]
-bot = Cord(entry_command="cmd",
-           entry=entry,
-           player_traits=player_traits)
-bot.launch()
+bot.user_traits = traits
+bot.launch(entry)
 ```
 
 ### More Information
