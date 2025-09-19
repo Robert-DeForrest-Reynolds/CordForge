@@ -70,12 +70,12 @@ bot.launch(entry)
 ```
 
 ### Launch & Use Bot
-```bash
-cf dev_name
+```base
+cordforge dev_name
 ```
 or
-```
-cordforge dev_name
+```bash
+cf dev_name
 ```
 
 Type `cmd` into the Discord server where Bot is a member.
