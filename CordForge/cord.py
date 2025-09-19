@@ -1,14 +1,16 @@
 from os.path import join
+from sys import argv, path, stdin
+from itertools import product
+from asyncio import get_running_loop, run
+from typing import Callable, Any
+import threading
+import logging
+
 from PIL import Image
 from discord.enums import ChannelType
 from discord import ButtonStyle, Embed, Intents, Member, Interaction, Message, TextChannel, VoiceChannel
 from discord.abc import GuildChannel
 from discord.ext.commands import Command, Bot, Context
-from sys import argv, path, stdin, stdout, stderr
-from itertools import product
-from asyncio import get_running_loop, run
-from typing import Callable, Any
-import threading
 
 from .card import Card
 from .object import Object
@@ -16,7 +18,7 @@ from .user import User
 from .data import Data
 from .font import Font
 
-import logging
+
 
 class Cord(Bot):
     def __init__(_, entry_command: str = None, autosave: bool = True) -> None:

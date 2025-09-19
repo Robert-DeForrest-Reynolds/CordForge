@@ -1,4 +1,7 @@
 class Color(tuple):
+    r:int
+    g:int
+    b:int
     __slots__ = []
     def __new__(Class,r,g,b,a=255):
         return super().__new__(Class,[r,g,b,a])

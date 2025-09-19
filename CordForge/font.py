@@ -1,5 +1,6 @@
 from PIL import ImageFont
 
+
 class Font:
     def __init__(_, font_path:str|None=None, size:int=24) -> None:
         _.size = size

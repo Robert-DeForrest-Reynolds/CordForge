@@ -82,12 +82,11 @@ class Launcher:
             
     def append_text(_, msg: str):
         tag = "first" if _.toggle else "second"
-        _.toggle = not _.toggle  # flip for next call
+        _.toggle = not _.toggle
         raw_message = msg[9:]
         if msg.startswith("[stdout]"): msg = raw_message
         if not msg.endswith("\n"): msg += "\n"
 
-        # schedule the GUI update on the main thread
         _.root.after(0, lambda: _._append_text_safe(msg, tag))
 
 
@@ -101,7 +100,7 @@ class Launcher:
     def send_input(_, event):
         user_input = _.entry.get()
         if user_input in _.commands.keys():
-            _.append_text(f"Input: {user_input}\n")
+            _.append_text(f">{user_input}\n")
             _.commands[user_input]()
         elif _.bot:
             _.bot.stdin.write(user_input + "\n")
@@ -120,7 +119,6 @@ class Launcher:
     def start(_):
         _.logger.info("Starting Bot...")
         _.bot = Popen(_.call_command, stdin=PIPE, stdout=PIPE, stderr=STDOUT, text=True, bufsize=1)
-
         threading.Thread(target=_.read_stream, args=(_.bot.stdout, "stdout"), daemon=True).start()
 
 
@@ -152,12 +150,12 @@ class Launcher:
     def emergency_stop(_):
         if not _.bot:
             _.logger.warning("Bot is not running it seems, stopping altogether though.")
-            exit()
-
+        
         if _.bot:
             _.logger.info("Discord bot stopped")
             _.bot = _.bot.kill()
-            exit()
+        
+        exit()
 
 
     def clear_logs(_):

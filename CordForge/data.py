@@ -6,7 +6,6 @@ from asyncio import sleep
 from os.path import exists, join
 from os import mkdir, listdir, remove
 
-from discord import Member
 from .user import User
 from .object import Object
 

@@ -9,6 +9,7 @@ class User(Object):
     name:str
     nickname:str
 
+
     def __init__(_, account:Member) -> None:
         super().__init__()
         _.account = account
