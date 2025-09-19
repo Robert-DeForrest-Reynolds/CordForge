@@ -41,9 +41,7 @@ class Cord(Bot):
         _.font:Font = None
         _.objects:dict[str:Object] = {}
         _.data = Data(_)
-
         _._handle_alias() # required before handing _.prefix to Bot.__init__()
-        super().__init__(command_prefix=_.prefix, intents=Intents.all())
         threading.Thread(target=_.sync_stdin_listener, args=(), daemon=True).start()
         
 
@@ -152,6 +150,7 @@ class Cord(Bot):
     def launch(_, entry:Callable, setup:Callable=None) -> None:
         'Start Discord Bot'
         _.logger.info("Launching...")
+        super().__init__(command_prefix=_.prefix, intents=Intents.all())
         _.entry = entry
         _.setup = setup
         _.run(_._get_token(_.instance_user))
