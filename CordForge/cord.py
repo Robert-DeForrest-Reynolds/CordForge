@@ -6,16 +6,12 @@ from discord.abc import GuildChannel
 from discord.ext.commands import Command, Bot, Context
 from sys import argv, path, stdin, stdout, stderr
 from itertools import product
-from asyncio import get_running_loop, run, StreamReader, StreamReaderProtocol, create_task
+from asyncio import get_running_loop, run
 from typing import Callable, Any
 import threading
 
-from .components import *
 from .card import Card
 from .object import Object
-from .colors import *
-from .font import Font as CFFont
-from .vector2 import Vector2
 from .user import User
 from .data import Data
 from .font import Font
@@ -44,7 +40,6 @@ class Cord(Bot):
         _.autosave = autosave
         _.source_directory = path[0]
         _.instance_user:str = argv[1]
-        _.user_dashboards:dict[str:Panel] = {}
         _.user_traits:list[list[str, Any]] = []
         _.user_profiles = {}
         _.message:Message = None
