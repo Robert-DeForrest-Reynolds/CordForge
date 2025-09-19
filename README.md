@@ -43,15 +43,10 @@ Create a `keys` file in your project directory:
 ```
 dev_name=OTk3MDA...
 ```
-
-Create a `settings` file in your project directory
-```
-Env=.venv/Scripts/python
-Entry=bot.py
-```
+Your "main" file must be called `entry.py`
 
 ### Basic Bot Setup
-`bot.py`
+`entry.py`
 ```python
 from CordForge import *
 
